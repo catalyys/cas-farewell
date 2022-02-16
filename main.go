@@ -45,13 +45,13 @@ func main() {
 	fmt.Fprintf(os.Stderr, "parsed current save file\n")
 
 	fmt.Printf("PB Times\n")
-	printTimes(pbTimes, false)
+	printTimes(pbTimes, 1)
 	fmt.Printf("-----------------------------------------------\n")
 	fmt.Printf("best Splits\n")
-	printTimes(buleTimes, false)
+	printTimes(buleTimes, 1)
 	fmt.Printf("-----------------------------------------------\n")
 
-	printTimes(times, true)
+	printTimes(times, 3)
 	//fmt.Fprintf(os.Stderr, "starting loop, press ^C to exit\n")
 	for {
 		select {
@@ -76,7 +76,7 @@ func main() {
 				times = parseSaveFile(saveFile)
 			}
 
-			printTimes(times, true)
+			printTimes(times, 2)
 
 		case <-c:
 			fmt.Fprintf(os.Stderr, "writing bule times\n")
@@ -150,14 +150,18 @@ func loadTimes(path string) map[Level]time.Duration {
 	return m
 }
 
-func printTimes(times map[Level]time.Duration, inf bool) {
+func printTimes(times map[Level]time.Duration, view int) {
 	total := time.Duration(0)
 	pbTotal := time.Duration(0)
 	besttotal := time.Duration(0)
 	pbSplit := time.Duration(0)
 	buleSplit := time.Duration(0)
 
-	fmt.Printf("%20s  %7s  %7s  %7s\n", "Chapter", "Time", "Diff", "Split")
+	if view == 1 || view == 3 {
+		fmt.Printf("%20s  %7s  %7s  %7s\n", "Chapter", "Time", "Diff", "Split")
+	} else {
+		fmt.Printf("%20s  %7s  %7s\n", "Chapter", "Time", "Diff")
+	}
 
 	for _, chapter := range anyPercent {
 		d := times[chapter]
@@ -168,7 +172,11 @@ func printTimes(times map[Level]time.Duration, inf bool) {
 		pbTotal += pbD
 
 		if d == 0 {
-			fmt.Printf("%20s     -      -       -\n", chapter)
+			if view == 1 || view == 3 {
+				fmt.Printf("%20s     -      -       -\n", chapter)
+			} else {
+				fmt.Printf("%20s     -      -\n", chapter)
+			}
 
 			besttotal += bD
 			if pbSplit == time.Duration(0) {
@@ -176,12 +184,20 @@ func printTimes(times map[Level]time.Duration, inf bool) {
 				buleSplit += bD
 			}
 		} else {
-			fmt.Printf("%20s  %s  %16s  %s\n", chapter, formatWithMinutes(total), formatDiff(total-pbTotal, d < bD), formatWithMinutes(d))
+			if view == 1 || view == 3 {
+				fmt.Printf("%20s  %s  %16s  %s\n", chapter, formatWithMinutes(total), formatDiff(total-pbTotal, d < bD), formatWithMinutes(d))
+			} else {
+				fmt.Printf("%20s  %s  %16s\n", chapter, formatWithMinutes(total), formatDiff(total-pbTotal, d < bD))
+			}
 
 			besttotal += d
 		}
 	}
-	if inf {
+	if view == 2 {
+		fmt.Printf("---------------------------------------\n")
+		fmt.Printf("%20s  %10s\n", "best possible Time", "PB Split")
+		fmt.Printf("%20s  %10s\n", formatWithMinutes(besttotal), formatWithMinutes(pbSplit))
+	} else if view == 3 {
 		fmt.Printf("-----------------------------------------------\n")
 		fmt.Printf("%20s  %10s  %10s\n", "best possible Time", "PB Split", "best Split")
 		fmt.Printf("%20s  %10s  %10s\n", formatWithMinutes(besttotal), formatWithMinutes(pbSplit), formatWithMinutes(buleSplit))
