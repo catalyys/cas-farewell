@@ -14,37 +14,17 @@ import (
 )
 
 var (
-	saveFile  = "/home/olli/.local/share/Celeste/Saves/0.celeste"
+	saveFile  = os.Getenv("HOME") + "/.local/share/Celeste/Saves/0.celeste"
 	pbTimes   map[Level]time.Duration
 	buleTimes map[Level]time.Duration
 )
 
 func main() {
-	if len(os.Args) > 1 {
-		if os.Args[1] == "-h" || os.Args[1] == "--help" {
-			fmt.Fprintf(os.Stderr, "Usage: %s [pbfile]\n", os.Args[0])
-			fmt.Fprintln(os.Stderr, "  if no file is provided then it will autosplit the bottom")
-			fmt.Fprintln(os.Stderr, "  save for the any% run configured in types.go")
-			fmt.Fprintln(os.Stderr, "")
-			fmt.Fprintln(os.Stderr, "  if pbFile is provided this program will parse your pb and")
-			fmt.Fprintln(os.Stderr, "  initialize your PB and gold splits in a format that this program understands")
-			return
-		}
-		fmt.Fprintf(os.Stderr, "parsing pb save file")
-		pbTimes = parseSaveFile(os.Args[1])
-		saveTimes(pbTimes, "pb.json")
-		_, err := os.Stat("bule.json")
-		if os.IsNotExist(err) {
-			fmt.Fprintln(os.Stderr, "bule.json missing, creating...")
-			saveTimes(pbTimes, "pb.json")
-		}
-	}
-
 	color.NoColor = false
 	pbTimes = loadTimes("pb.json")
 	buleTimes = loadTimes("bule.json")
 
-	fmt.Fprintf(os.Stderr, "read pb and best times")
+	fmt.Fprintf(os.Stderr, "read pb and best times\n")
 
 	w, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -97,33 +77,12 @@ func main() {
 			}
 
 			printTimes(times, true)
-			_, isDone := times[anyPercent[len(anyPercent)-1]]
-			if isDone {
-				var d, pbD time.Duration
-
-				for _, k := range anyPercent {
-					d += times[k]
-					pbD += pbTimes[k]
-
-				}
-
-				if d < pbD {
-					log.Printf("new pb, congratulations!")
-					pbTimes = times
-					saveTimes(pbTimes, "pb.json")
-				}
-			}
 
 		case <-c:
 			fmt.Fprintf(os.Stderr, "writing bule times\n")
 			buleTimes = mergeBule(times, buleTimes)
 			saveTimes(buleTimes, "bule.json")
 			return
-
-		//default:
-		//	times = parseSaveFile(saveFile)
-		//	printTimes(times)
-		//	time.Sleep(1 * time.Second)
 		}
 	}
 }
@@ -141,7 +100,9 @@ func parseSaveFile(path string) map[Level]time.Duration {
 
 	var s SaveData
 	err = d.Decode(&s)
+
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "corrupted or missing savefile!\n")
 		log.Fatal(err)
 	}
 
@@ -210,7 +171,7 @@ func printTimes(times map[Level]time.Duration, inf bool) {
 			fmt.Printf("%20s     -      -       -\n", chapter)
 
 			besttotal += bD
-			if pbSplit == time.Duration(0){
+			if pbSplit == time.Duration(0) {
 				pbSplit += pbD
 				buleSplit += bD
 			}
@@ -265,12 +226,12 @@ func formatDiff(d time.Duration, isBule bool) string {
 	tenths %= 10
 	seconds %= 60
 
-	if d >= 1*time.Minute{
+	if d >= 1*time.Minute {
 		return sprintf("%c%d:%02d.%01d", sign, minutes, seconds, tenths)
-	}else{
+	} else {
 		return sprintf("%c%02d.%01d", sign, seconds, tenths)
 	}
-	
+
 }
 
 func mergeBule(old, new map[Level]time.Duration) map[Level]time.Duration {
