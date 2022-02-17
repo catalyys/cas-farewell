@@ -24,8 +24,9 @@ func main() {
 	color.NoColor = false
 
 	app := cli.NewApp()
-	app.Name = "Celeste Auto Splitter"
-	app.Usage = "automatically splits the time for your Celeste run"
+	app.Name = "Celeste Auto Splitter Farewell"
+	app.Usage = "Farewell"
+	app.Version = "0.6"
 
 	// We'll be using the same flag for all our commands
 	// so we'll define it up here
