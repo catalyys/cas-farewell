@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/fsnotify/fsnotify"
-	"github.com/urfave/cli/v2"
+	//"github.com/fsnotify/fsnotify"
+	"github.com/urfave/cli"
 )
 
 var (
@@ -27,65 +27,100 @@ func main() {
 
 	fmt.Fprintf(os.Stderr, "read pb and best times\n")
 
-	w, err := fsnotify.NewWatcher()
-	if err != nil {
-		log.Fatal(err)
-	}
+	// w, err := fsnotify.NewWatcher()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	err = w.Add(saveFile)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// err = w.Add(saveFile)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	fmt.Fprintf(os.Stderr, "added save file to watched files\n")
+	// fmt.Fprintf(os.Stderr, "added save file to watched files\n")
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
-	times := parseSaveFile(saveFile)
-	fmt.Fprintf(os.Stderr, "parsed current save file\n")
+	//times := parseSaveFile(saveFile)
+	//fmt.Fprintf(os.Stderr, "parsed current save file\n")
 
-	fmt.Printf("PB Times\n")
-	printTimes(pbTimes, 1)
-	fmt.Printf("-----------------------------------------------\n")
-	fmt.Printf("best Splits\n")
-	printTimes(buleTimes, 1)
-	fmt.Printf("-----------------------------------------------\n")
+	app := cli.NewApp()
+    app.Name = "Website Lookup CLI"
+    app.Usage = "Let's you query IPs, CNAMEs, MX records and Name Servers!"
 
-	printTimes(times, 3)
-	//fmt.Fprintf(os.Stderr, "starting loop, press ^C to exit\n")
-	for {
-		select {
-		case ev := <-w.Events:
-			switch ev.Op {
-			case fsnotify.Remove:
-				buleTimes = mergeBule(times, buleTimes)
-				times = make(map[Level]time.Duration)
+	// We'll be using the same flag for all our commands
+    // so we'll define it up here
+    myFlags := []cli.Flag{
+        cli.StringFlag{
+            Name:  "view",
+            Value: "best",
+        },
+    }
 
-				f, err := os.OpenFile(saveFile, os.O_CREATE, 0644)
-				if err != nil {
-					log.Fatal(err)
+	// we create our commands
+    app.Commands = []cli.Command{
+        {
+            Name:  "show",
+            Usage: "Show best splits or peronal best time",
+            Flags: myFlags,
+            // the action, or code that will be executed when
+            // we execute our `show` command
+            Action: func(c *cli.Context) error {
+				if c.String("view") == "best"{
+					fmt.Printf("PB Times\n")
+					printTimes(pbTimes, 1)
+					fmt.Printf("-----------------------------------------------\n")
+				}else if c.String("view") == "splits"{
+					fmt.Printf("best Splits\n")
+					printTimes(buleTimes, 1)
+					fmt.Printf("-----------------------------------------------\n")
 				}
-				f.Close()
-				err = w.Add(saveFile)
-				if err != nil {
-					log.Fatal(err)
-				}
-			case fsnotify.Chmod:
-				fallthrough
-			case fsnotify.Write:
-				times = parseSaveFile(saveFile)
-			}
+                return nil
+            },
+        },
+    }
 
-			printTimes(times, 2)
+	// printTimes(times, 3)
+	// //fmt.Fprintf(os.Stderr, "starting loop, press ^C to exit\n")
+	// for {
+	// 	select {
+	// 	case ev := <-w.Events:
+	// 		switch ev.Op {
+	// 		case fsnotify.Remove:
+	// 			buleTimes = mergeBule(times, buleTimes)
+	// 			times = make(map[Level]time.Duration)
 
-		case <-c:
-			fmt.Fprintf(os.Stderr, "writing bule times\n")
-			buleTimes = mergeBule(times, buleTimes)
-			saveTimes(buleTimes, "bule.json")
-			return
-		}
-	}
+	// 			f, err := os.OpenFile(saveFile, os.O_CREATE, 0644)
+	// 			if err != nil {
+	// 				log.Fatal(err)
+	// 			}
+	// 			f.Close()
+	// 			err = w.Add(saveFile)
+	// 			if err != nil {
+	// 				log.Fatal(err)
+	// 			}
+	// 		case fsnotify.Chmod:
+	// 			fallthrough
+	// 		case fsnotify.Write:
+	// 			times = parseSaveFile(saveFile)
+	// 		}
+
+	// 		printTimes(times, 2)
+
+	// 	case <-c:
+	// 		fmt.Fprintf(os.Stderr, "writing bule times\n")
+	// 		buleTimes = mergeBule(times, buleTimes)
+	// 		saveTimes(buleTimes, "bule.json")
+	// 		return
+	// 	}
+	// }
+
+	// start our application
+    err := app.Run(os.Args)
+    if err != nil {
+        log.Fatal(err)
+    }
 }
 
 func parseSaveFile(path string) map[Level]time.Duration {
