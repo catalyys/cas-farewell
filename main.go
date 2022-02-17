@@ -153,6 +153,7 @@ func runOverlay(file string) {
 
 func showBest() {
 	pbTimes = loadTimes("pb.json")
+	buleTimes = loadTimes("bule.json")
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -163,6 +164,7 @@ func showBest() {
 }
 
 func showSplits() {
+	pbTimes = loadTimes("pb.json")
 	buleTimes = loadTimes("bule.json")
 
 	c := make(chan os.Signal, 1)
