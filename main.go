@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	//"github.com/fsnotify/fsnotify"
+	"github.com/fsnotify/fsnotify"
 	"github.com/urfave/cli"
 )
 
@@ -27,100 +27,124 @@ func main() {
 
 	fmt.Fprintf(os.Stderr, "read pb and best times\n")
 
-	// w, err := fsnotify.NewWatcher()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// err = w.Add(saveFile)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// fmt.Fprintf(os.Stderr, "added save file to watched files\n")
-
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
-	//times := parseSaveFile(saveFile)
-	//fmt.Fprintf(os.Stderr, "parsed current save file\n")
-
 	app := cli.NewApp()
-    app.Name = "Website Lookup CLI"
-    app.Usage = "Let's you query IPs, CNAMEs, MX records and Name Servers!"
+	app.Name = "Website Lookup CLI"
+	app.Usage = "Let's you query IPs, CNAMEs, MX records and Name Servers!"
 
 	// We'll be using the same flag for all our commands
-    // so we'll define it up here
-    myFlags := []cli.Flag{
-        cli.StringFlag{
-            Name:  "view",
-            Value: "best",
-        },
-    }
+	// so we'll define it up here
+	myFlags := []cli.Flag{
+		cli.StringFlag{
+			Name:  "view",
+			Value: "best",
+		},
+		cli.StringFlag{
+			Name:  "savefile",
+			Value: "2",
+		},
+	}
 
 	// we create our commands
-    app.Commands = []cli.Command{
-        {
-            Name:  "show",
-            Usage: "Show best splits or peronal best time",
-            Flags: myFlags,
-            // the action, or code that will be executed when
-            // we execute our `show` command
-            Action: func(c *cli.Context) error {
-				if c.String("view") == "best"{
+	app.Commands = []cli.Command{
+		{
+			Name:  "show",
+			Usage: "Show best splits or peronal best time",
+			Flags: myFlags,
+			// the action, or code that will be executed when
+			// we execute our `show` command
+			Action: func(c *cli.Context) error {
+				if c.String("view") == "best" {
 					fmt.Printf("PB Times\n")
 					printTimes(pbTimes, 1)
 					fmt.Printf("-----------------------------------------------\n")
-				}else if c.String("view") == "splits"{
+				} else if c.String("view") == "splits" {
 					fmt.Printf("best Splits\n")
 					printTimes(buleTimes, 1)
 					fmt.Printf("-----------------------------------------------\n")
 				}
-                return nil
-            },
-        },
-    }
-
-	// printTimes(times, 3)
-	// //fmt.Fprintf(os.Stderr, "starting loop, press ^C to exit\n")
-	// for {
-	// 	select {
-	// 	case ev := <-w.Events:
-	// 		switch ev.Op {
-	// 		case fsnotify.Remove:
-	// 			buleTimes = mergeBule(times, buleTimes)
-	// 			times = make(map[Level]time.Duration)
-
-	// 			f, err := os.OpenFile(saveFile, os.O_CREATE, 0644)
-	// 			if err != nil {
-	// 				log.Fatal(err)
-	// 			}
-	// 			f.Close()
-	// 			err = w.Add(saveFile)
-	// 			if err != nil {
-	// 				log.Fatal(err)
-	// 			}
-	// 		case fsnotify.Chmod:
-	// 			fallthrough
-	// 		case fsnotify.Write:
-	// 			times = parseSaveFile(saveFile)
-	// 		}
-
-	// 		printTimes(times, 2)
-
-	// 	case <-c:
-	// 		fmt.Fprintf(os.Stderr, "writing bule times\n")
-	// 		buleTimes = mergeBule(times, buleTimes)
-	// 		saveTimes(buleTimes, "bule.json")
-	// 		return
-	// 	}
-	// }
+				return nil
+			},
+		},
+		{
+			Name:  "run",
+			Usage: "Start the overlay",
+			Flags: myFlags,
+			// the action, or code that will be executed when
+			// we execute our `show` command
+			Action: func(c *cli.Context) error {
+				if c.String("savefile") != "0" && c.String("savefile") != "1" && c.String("savefile") != "2" {
+					fmt.Printf("savefile needs to be 0, 1 or 2\n")
+					return nil
+				}
+				runOverlay(c.String("savefile"))
+				return nil
+			},
+		},
+	}
 
 	// start our application
-    err := app.Run(os.Args)
-    if err != nil {
-        log.Fatal(err)
-    }
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func runOverlay(file string) {
+	saveFile = os.Getenv("HOME") + "/.local/share/Celeste/Saves/" + file + ".celeste"
+
+	w, err := fsnotify.NewWatcher()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = w.Add(saveFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+
+	times := parseSaveFile(saveFile)
+	fmt.Fprintf(os.Stderr, "parsed current save file\n")
+
+	printTimes(times, 3)
+	//fmt.Fprintf(os.Stderr, "starting loop, press ^C to exit\n")
+	for {
+		select {
+		case ev := <-w.Events:
+			switch ev.Op {
+			case fsnotify.Remove:
+				buleTimes = mergeBule(times, buleTimes)
+				times = make(map[Level]time.Duration)
+
+				f, err := os.OpenFile(saveFile, os.O_CREATE, 0644)
+				if err != nil {
+					log.Fatal(err)
+				}
+				f.Close()
+				err = w.Add(saveFile)
+				if err != nil {
+					log.Fatal(err)
+				}
+			case fsnotify.Chmod:
+				fallthrough
+			case fsnotify.Write:
+				times = parseSaveFile(saveFile)
+			}
+
+			printTimes(times, 2)
+
+		case <-c:
+			fmt.Fprintf(os.Stderr, "writing bule times\n")
+			buleTimes = mergeBule(times, buleTimes)
+			saveTimes(buleTimes, "bule.json")
+			return
+		}
+	}
 }
 
 func parseSaveFile(path string) map[Level]time.Duration {
