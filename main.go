@@ -22,56 +22,59 @@ var (
 
 func main() {
 	color.NoColor = false
-	pbTimes = loadTimes("pb.json")
-	buleTimes = loadTimes("bule.json")
-
-	fmt.Fprintf(os.Stderr, "read pb and best times\n")
-
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
 
 	app := cli.NewApp()
-	app.Name = "Website Lookup CLI"
-	app.Usage = "Let's you query IPs, CNAMEs, MX records and Name Servers!"
+	app.Name = "Celeste Auto Splitter"
+	app.Usage = "automatically splits the time for your Celeste run"
 
 	// We'll be using the same flag for all our commands
 	// so we'll define it up here
 	myFlags := []cli.Flag{
 		cli.StringFlag{
-			Name:  "view",
+			Name:  "view, v",
 			Value: "best",
+			Usage: "shows you personal best or best splits",
 		},
 		cli.StringFlag{
-			Name:  "savefile",
+			Name:  "savefile, save, s",
 			Value: "2",
+			Usage: "indicates the savefile slot `0`, `1` or `2`",
 		},
 	}
 
 	// we create our commands
 	app.Commands = []cli.Command{
 		{
-			Name:  "show",
-			Usage: "Show best splits or peronal best time",
-			Flags: myFlags,
+			Name:    "show",
+			Aliases: []string{"s"},
+			Usage:   "Show best splits or peronal best time",
+			Flags:   myFlags,
 			// the action, or code that will be executed when
 			// we execute our `show` command
-			Action: func(c *cli.Context) error {
-				if c.String("view") == "best" {
-					fmt.Printf("PB Times\n")
-					printTimes(pbTimes, 1)
-					fmt.Printf("-----------------------------------------------\n")
-				} else if c.String("view") == "splits" {
-					fmt.Printf("best Splits\n")
-					printTimes(buleTimes, 1)
-					fmt.Printf("-----------------------------------------------\n")
-				}
-				return nil
+			Subcommands: []cli.Command{
+				{
+					Name:  "best",
+					Usage: "show personal best",
+					Action: func(c *cli.Context) error {
+						showBest()
+						return nil
+					},
+				},
+				{
+					Name:  "splits",
+					Usage: "show best splits",
+					Action: func(c *cli.Context) error {
+						showSplits()
+						return nil
+					},
+				},
 			},
 		},
 		{
-			Name:  "run",
-			Usage: "Start the overlay",
-			Flags: myFlags,
+			Name:    "run",
+			Aliases: []string{"r"},
+			Usage:   "start the overlay for the run",
+			Flags:   myFlags,
 			// the action, or code that will be executed when
 			// we execute our `show` command
 			Action: func(c *cli.Context) error {
@@ -94,6 +97,8 @@ func main() {
 
 func runOverlay(file string) {
 	saveFile = os.Getenv("HOME") + "/.local/share/Celeste/Saves/" + file + ".celeste"
+	buleTimes = loadTimes("bule.json")
+	pbTimes = loadTimes("pb.json")
 
 	w, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -109,7 +114,6 @@ func runOverlay(file string) {
 	signal.Notify(c, os.Interrupt)
 
 	times := parseSaveFile(saveFile)
-	fmt.Fprintf(os.Stderr, "parsed current save file\n")
 
 	printTimes(times, 3)
 	//fmt.Fprintf(os.Stderr, "starting loop, press ^C to exit\n")
@@ -139,12 +143,33 @@ func runOverlay(file string) {
 			printTimes(times, 2)
 
 		case <-c:
-			fmt.Fprintf(os.Stderr, "writing bule times\n")
 			buleTimes = mergeBule(times, buleTimes)
 			saveTimes(buleTimes, "bule.json")
 			return
 		}
 	}
+}
+
+func showBest() {
+	pbTimes = loadTimes("pb.json")
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+
+	fmt.Printf("PB Times\n")
+	printTimes(pbTimes, 1)
+	fmt.Printf("-----------------------------------------------\n")
+}
+
+func showSplits() {
+	buleTimes = loadTimes("bule.json")
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+
+	fmt.Printf("best Splits\n")
+	printTimes(buleTimes, 1)
+	fmt.Printf("-----------------------------------------------\n")
 }
 
 func parseSaveFile(path string) map[Level]time.Duration {
