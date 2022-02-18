@@ -23,6 +23,7 @@ Here are all the things you can configure without changing the code.
 | show     | shows you personal best or best splits              | ./cas show best / ./cas show splits    |
 | -i       | gives you more information                          | ./cas -i show best    |
 | -s       | gives you more information about your splits        | ./cas -si run    |
+| -save, -savefile| changes the savefile slot [0, 1, 2]       | ./cas -save 0    |
 
 ## Route configuration
 
@@ -37,3 +38,9 @@ Modify `anyPercent` variable in `types.go`.
 ### New Run
 
 ![](example/autodelete.gif)
+
+
+#### Credits
+
+This Repository was built on top of the original cas from ~bfiedler.
+The original Repo can be found at https://sr.ht/~bfiedler/cas/
