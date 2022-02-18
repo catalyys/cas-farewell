@@ -27,15 +27,19 @@ func main() {
 	app.Name = "Celeste Auto Splitter Farewell"
 	app.Usage = "Farewell"
 	app.Version = "0.6"
-	app.Flags = []cli.Flag {
+	app.UseShortOptionHandling = true
+
+	myFlags := []cli.Flag{
 		cli.BoolFlag{Name: "splits, s"},
 		cli.BoolFlag{Name: "info, i"},
 		cli.StringFlag{
-		  Name: "savefile, save",
-		  Value: "2",
-		  Usage: "indicates the savefile slot `0`, 1 or 2",
+			Name:  "savefile, save",
+			Value: "2",
+			Usage: "indicates the savefile slot `0`, 1 or 2",
 		},
 	}
+	app.Flags = myFlags
+
 	app.Action = func(c *cli.Context) error {
 		if c.String("savefile") != "0" && c.String("savefile") != "1" && c.String("savefile") != "2" {
 			fmt.Printf("savefile needs to be 0, 1 or 2\n")
@@ -43,7 +47,7 @@ func main() {
 		}
 		runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"))
 		return nil
-	  }
+	}
 
 	// We'll be using the same flag for all our commands
 	// so we'll define it up here
@@ -61,12 +65,11 @@ func main() {
 			Name:    "show",
 			Aliases: []string{"s"},
 			Usage:   "Show best splits or peronal best time",
-			// the action, or code that will be executed when
-			// we execute our `show` command
 			Subcommands: []cli.Command{
 				{
 					Name:  "best",
 					Usage: "show personal best",
+					Flags: myFlags,
 					Action: func(c *cli.Context) error {
 						showBest(c.Bool("info"), c.Bool("splits"))
 						return nil
@@ -75,6 +78,7 @@ func main() {
 				{
 					Name:  "splits",
 					Usage: "show best splits",
+					Flags: myFlags,
 					Action: func(c *cli.Context) error {
 						showSplits(c.Bool("info"), c.Bool("splits"))
 						return nil
@@ -86,11 +90,11 @@ func main() {
 			Name:    "run",
 			Aliases: []string{"r"},
 			Usage:   "start the overlay for the run",
-			Flags:   []cli.Flag {
+			Flags: []cli.Flag{
 				cli.StringFlag{
-				  Name: "savefile, save, s",
-				  Value: "2",
-				  Usage: "indicates the savefile slot `0`, 1 or 2",
+					Name:  "savefile, save, s",
+					Value: "2",
+					Usage: "indicates the savefile slot `0`, 1 or 2",
 				},
 			},
 			// the action, or code that will be executed when
@@ -299,14 +303,14 @@ func printTimes(times map[Level]time.Duration, info bool, splits bool) {
 			besttotal += d
 		}
 	}
-	if info {
-		fmt.Printf("---------------------------------------\n")
-		fmt.Printf("%20s  %10s\n", "best possible Time", "PB Split")
-		fmt.Printf("%20s  %10s\n", formatWithMinutes(besttotal), formatWithMinutes(pbSplit))
-	} else if splits && info {
+	if splits && info {
 		fmt.Printf("-----------------------------------------------\n")
 		fmt.Printf("%20s  %10s  %10s\n", "best possible Time", "PB Split", "best Split")
 		fmt.Printf("%20s  %10s  %10s\n", formatWithMinutes(besttotal), formatWithMinutes(pbSplit), formatWithMinutes(buleSplit))
+	} else if info {
+		fmt.Printf("---------------------------------------\n")
+		fmt.Printf("%20s  %10s\n", "best possible Time", "PB Split")
+		fmt.Printf("%20s  %10s\n", formatWithMinutes(besttotal), formatWithMinutes(pbSplit))
 	}
 }
 
