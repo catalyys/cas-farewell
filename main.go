@@ -11,6 +11,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/fsnotify/fsnotify"
+	"github.com/urfave/cli"
 )
 
 var (
@@ -21,10 +22,106 @@ var (
 
 func main() {
 	color.NoColor = false
-	pbTimes = loadTimes("pb.json")
-	buleTimes = loadTimes("bule.json")
 
-	fmt.Fprintf(os.Stderr, "read pb and best times\n")
+	app := cli.NewApp()
+	app.Name = "Celeste Auto Splitter Farewell"
+	app.Usage = "Farewell"
+	app.Version = "0.6"
+	app.UseShortOptionHandling = true
+
+	myFlags := []cli.Flag{
+		cli.BoolFlag{Name: "splits, s"},
+		cli.BoolFlag{Name: "info, i"},
+		cli.StringFlag{
+			Name:  "savefile, save",
+			Value: "2",
+			Usage: "indicates the savefile slot `0`, 1 or 2",
+		},
+	}
+	app.Flags = myFlags
+
+	app.Action = func(c *cli.Context) error {
+		if c.String("savefile") != "0" && c.String("savefile") != "1" && c.String("savefile") != "2" {
+			fmt.Printf("savefile needs to be 0, 1 or 2\n")
+			return nil
+		}
+		runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"))
+		return nil
+	}
+
+	// We'll be using the same flag for all our commands
+	// so we'll define it up here
+	// myFlags := []cli.Flag{
+	// 	cli.StringFlag{
+	// 		Name:  "savefile, save, s",
+	// 		Value: "2",
+	// 		Usage: "indicates the savefile slot `0`, `1` or `2`",
+	// 	},
+	// }
+
+	// we create our commands
+	app.Commands = []cli.Command{
+		{
+			Name:    "show",
+			Aliases: []string{"s"},
+			Usage:   "Show best splits or peronal best time",
+			Subcommands: []cli.Command{
+				{
+					Name:  "best",
+					Usage: "show personal best",
+					Flags: myFlags,
+					Action: func(c *cli.Context) error {
+						showBest(c.Bool("info"), c.Bool("splits"))
+						return nil
+					},
+				},
+				{
+					Name:  "splits",
+					Usage: "show best splits",
+					Flags: myFlags,
+					Action: func(c *cli.Context) error {
+						showSplits(c.Bool("info"), c.Bool("splits"))
+						return nil
+					},
+				},
+			},
+		},
+		{
+			Name:    "run",
+			Aliases: []string{"r"},
+			Usage:   "start the overlay for the run",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "savefile, save, s",
+					Value: "2",
+					Usage: "indicates the savefile slot `0`, 1 or 2",
+				},
+			},
+			// the action, or code that will be executed when
+			// we execute our `show` command
+			Action: func(c *cli.Context) error {
+				if c.String("savefile") != "0" && c.String("savefile") != "1" && c.String("savefile") != "2" {
+					fmt.Printf("savefile needs to be 0, 1 or 2\n")
+					return nil
+				}
+				fmt.Println("info:", c.Bool("info"))
+				runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"))
+				return nil
+			},
+		},
+	}
+
+	// start our application
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func runOverlay(file string, info bool, splits bool) {
+	saveFile = os.Getenv("HOME") + "/.local/share/Celeste/Saves/" + file + ".celeste"
+	buleTimes = loadTimes("bule.json")
+	pbTimes = loadTimes("pb.json")
 
 	w, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -36,22 +133,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Fprintf(os.Stderr, "added save file to watched files\n")
-
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
 	times := parseSaveFile(saveFile)
-	fmt.Fprintf(os.Stderr, "parsed current save file\n")
 
-	fmt.Printf("PB Times\n")
-	printTimes(pbTimes, 1)
-	fmt.Printf("-----------------------------------------------\n")
-	fmt.Printf("best Splits\n")
-	printTimes(buleTimes, 1)
-	fmt.Printf("-----------------------------------------------\n")
-
-	printTimes(times, 3)
+	printTimes(times, info, splits)
 	//fmt.Fprintf(os.Stderr, "starting loop, press ^C to exit\n")
 	for {
 		select {
@@ -76,15 +163,38 @@ func main() {
 				times = parseSaveFile(saveFile)
 			}
 
-			printTimes(times, 2)
+			printTimes(times, info, splits)
 
 		case <-c:
-			fmt.Fprintf(os.Stderr, "writing bule times\n")
 			buleTimes = mergeBule(times, buleTimes)
 			saveTimes(buleTimes, "bule.json")
 			return
 		}
 	}
+}
+
+func showBest(info bool, splits bool) {
+	pbTimes = loadTimes("pb.json")
+	buleTimes = loadTimes("bule.json")
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+
+	fmt.Printf("PB Times\n")
+	printTimes(pbTimes, info, splits)
+	fmt.Printf("-----------------------------------------------\n")
+}
+
+func showSplits(info bool, splits bool) {
+	pbTimes = loadTimes("pb.json")
+	buleTimes = loadTimes("bule.json")
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+
+	fmt.Printf("best Splits\n")
+	printTimes(buleTimes, info, splits)
+	fmt.Printf("-----------------------------------------------\n")
 }
 
 func parseSaveFile(path string) map[Level]time.Duration {
@@ -150,14 +260,14 @@ func loadTimes(path string) map[Level]time.Duration {
 	return m
 }
 
-func printTimes(times map[Level]time.Duration, view int) {
+func printTimes(times map[Level]time.Duration, info bool, splits bool) {
 	total := time.Duration(0)
 	pbTotal := time.Duration(0)
 	besttotal := time.Duration(0)
 	pbSplit := time.Duration(0)
 	buleSplit := time.Duration(0)
 
-	if view == 1 || view == 3 {
+	if splits {
 		fmt.Printf("%20s  %7s  %7s  %7s\n", "Chapter", "Time", "Diff", "Split")
 	} else {
 		fmt.Printf("%20s  %7s  %7s\n", "Chapter", "Time", "Diff")
@@ -172,7 +282,7 @@ func printTimes(times map[Level]time.Duration, view int) {
 		pbTotal += pbD
 
 		if d == 0 {
-			if view == 1 || view == 3 {
+			if splits {
 				fmt.Printf("%20s     -      -       -\n", chapter)
 			} else {
 				fmt.Printf("%20s     -      -\n", chapter)
@@ -184,7 +294,7 @@ func printTimes(times map[Level]time.Duration, view int) {
 				buleSplit += bD
 			}
 		} else {
-			if view == 1 || view == 3 {
+			if splits {
 				fmt.Printf("%20s  %s  %16s  %s\n", chapter, formatWithMinutes(total), formatDiff(total-pbTotal, d < bD), formatWithMinutes(d))
 			} else {
 				fmt.Printf("%20s  %s  %16s\n", chapter, formatWithMinutes(total), formatDiff(total-pbTotal, d < bD))
@@ -193,14 +303,14 @@ func printTimes(times map[Level]time.Duration, view int) {
 			besttotal += d
 		}
 	}
-	if view == 2 {
-		fmt.Printf("---------------------------------------\n")
-		fmt.Printf("%20s  %10s\n", "best possible Time", "PB Split")
-		fmt.Printf("%20s  %10s\n", formatWithMinutes(besttotal), formatWithMinutes(pbSplit))
-	} else if view == 3 {
+	if splits && info {
 		fmt.Printf("-----------------------------------------------\n")
 		fmt.Printf("%20s  %10s  %10s\n", "best possible Time", "PB Split", "best Split")
 		fmt.Printf("%20s  %10s  %10s\n", formatWithMinutes(besttotal), formatWithMinutes(pbSplit), formatWithMinutes(buleSplit))
+	} else if info {
+		fmt.Printf("---------------------------------------\n")
+		fmt.Printf("%20s  %10s\n", "best possible Time", "PB Split")
+		fmt.Printf("%20s  %10s\n", formatWithMinutes(besttotal), formatWithMinutes(pbSplit))
 	}
 }
 
