@@ -27,21 +27,31 @@ func main() {
 	app.Name = "Celeste Auto Splitter Farewell"
 	app.Usage = "Farewell"
 	app.Version = "0.6"
+	app.Flags = []cli.Flag {
+		cli.StringFlag{
+		  Name: "savefile, save, s",
+		  Value: "2",
+		  Usage: "indicates the savefile slot `0`, 1 or 2",
+		},
+	}
+	app.Action = func(c *cli.Context) error {
+		if c.String("savefile") != "0" && c.String("savefile") != "1" && c.String("savefile") != "2" {
+			fmt.Printf("savefile needs to be 0, 1 or 2\n")
+			return nil
+		}
+		runOverlay(c.String("savefile"))
+		return nil
+	  }
 
 	// We'll be using the same flag for all our commands
 	// so we'll define it up here
-	myFlags := []cli.Flag{
-		cli.StringFlag{
-			Name:  "view, v",
-			Value: "best",
-			Usage: "shows you personal best or best splits",
-		},
-		cli.StringFlag{
-			Name:  "savefile, save, s",
-			Value: "2",
-			Usage: "indicates the savefile slot `0`, `1` or `2`",
-		},
-	}
+	// myFlags := []cli.Flag{
+	// 	cli.StringFlag{
+	// 		Name:  "savefile, save, s",
+	// 		Value: "2",
+	// 		Usage: "indicates the savefile slot `0`, `1` or `2`",
+	// 	},
+	// }
 
 	// we create our commands
 	app.Commands = []cli.Command{
@@ -49,7 +59,6 @@ func main() {
 			Name:    "show",
 			Aliases: []string{"s"},
 			Usage:   "Show best splits or peronal best time",
-			Flags:   myFlags,
 			// the action, or code that will be executed when
 			// we execute our `show` command
 			Subcommands: []cli.Command{
@@ -75,7 +84,13 @@ func main() {
 			Name:    "run",
 			Aliases: []string{"r"},
 			Usage:   "start the overlay for the run",
-			Flags:   myFlags,
+			Flags:   []cli.Flag {
+				cli.StringFlag{
+				  Name: "savefile, save, s",
+				  Value: "2",
+				  Usage: "indicates the savefile slot `0`, 1 or 2",
+				},
+			},
 			// the action, or code that will be executed when
 			// we execute our `show` command
 			Action: func(c *cli.Context) error {
