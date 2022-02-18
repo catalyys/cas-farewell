@@ -2,9 +2,13 @@
 
 Celeste Auto-Splitter for Linux.
 
-## Compiling
+## Installing
 
-`go build`
+```
+git clone https://github.com/DevilFreak/cas-farewell.git
+cd cas-farewell/
+go build
+```
 
 ## running cas - farewell
 
@@ -14,11 +18,11 @@ Here are all the things you can configure without changing the code.
 
 | Argument | Usage                                 | example |
 | -------- | ------------------------------------- | ------- |
-| run | start the application (same as executing with nothing)         | ./cas run       |
-| help     | shows the help                   | ./cas help       |
-| show    | shows you personal best or best splits              | ./cas show best | ./cas show splits    |
-| -i    | gives you more information | ./cas -i show best    |
-| -s     | gives you more information about your splits                | ./cas -si run    |
+| run      | start the application (same as executing with nothing)| ./cas run       |
+| help     | shows the help                                      | ./cas help       |
+| show     | shows you personal best or best splits              | ./cas show best / ./cas show splits    |
+| -i       | gives you more information                          | ./cas -i show best    |
+| -s       | gives you more information about your splits        | ./cas -si run    |
 
 ## Route configuration
 
