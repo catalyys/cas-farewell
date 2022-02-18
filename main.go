@@ -28,8 +28,10 @@ func main() {
 	app.Usage = "Farewell"
 	app.Version = "0.6"
 	app.Flags = []cli.Flag {
+		cli.BoolFlag{Name: "splits, s"},
+		cli.BoolFlag{Name: "info, i"},
 		cli.StringFlag{
-		  Name: "savefile, save, s",
+		  Name: "savefile, save",
 		  Value: "2",
 		  Usage: "indicates the savefile slot `0`, 1 or 2",
 		},
@@ -39,7 +41,7 @@ func main() {
 			fmt.Printf("savefile needs to be 0, 1 or 2\n")
 			return nil
 		}
-		runOverlay(c.String("savefile"))
+		runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"))
 		return nil
 	  }
 
@@ -66,7 +68,7 @@ func main() {
 					Name:  "best",
 					Usage: "show personal best",
 					Action: func(c *cli.Context) error {
-						showBest()
+						showBest(c.Bool("info"), c.Bool("splits"))
 						return nil
 					},
 				},
@@ -74,7 +76,7 @@ func main() {
 					Name:  "splits",
 					Usage: "show best splits",
 					Action: func(c *cli.Context) error {
-						showSplits()
+						showSplits(c.Bool("info"), c.Bool("splits"))
 						return nil
 					},
 				},
@@ -98,7 +100,8 @@ func main() {
 					fmt.Printf("savefile needs to be 0, 1 or 2\n")
 					return nil
 				}
-				runOverlay(c.String("savefile"))
+				fmt.Println("info:", c.Bool("info"))
+				runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"))
 				return nil
 			},
 		},
@@ -111,7 +114,7 @@ func main() {
 	}
 }
 
-func runOverlay(file string) {
+func runOverlay(file string, info bool, splits bool) {
 	saveFile = os.Getenv("HOME") + "/.local/share/Celeste/Saves/" + file + ".celeste"
 	buleTimes = loadTimes("bule.json")
 	pbTimes = loadTimes("pb.json")
@@ -131,7 +134,7 @@ func runOverlay(file string) {
 
 	times := parseSaveFile(saveFile)
 
-	printTimes(times, 3)
+	printTimes(times, info, splits)
 	//fmt.Fprintf(os.Stderr, "starting loop, press ^C to exit\n")
 	for {
 		select {
@@ -156,7 +159,7 @@ func runOverlay(file string) {
 				times = parseSaveFile(saveFile)
 			}
 
-			printTimes(times, 2)
+			printTimes(times, info, splits)
 
 		case <-c:
 			buleTimes = mergeBule(times, buleTimes)
@@ -166,7 +169,7 @@ func runOverlay(file string) {
 	}
 }
 
-func showBest() {
+func showBest(info bool, splits bool) {
 	pbTimes = loadTimes("pb.json")
 	buleTimes = loadTimes("bule.json")
 
@@ -174,11 +177,11 @@ func showBest() {
 	signal.Notify(c, os.Interrupt)
 
 	fmt.Printf("PB Times\n")
-	printTimes(pbTimes, 1)
+	printTimes(pbTimes, info, splits)
 	fmt.Printf("-----------------------------------------------\n")
 }
 
-func showSplits() {
+func showSplits(info bool, splits bool) {
 	pbTimes = loadTimes("pb.json")
 	buleTimes = loadTimes("bule.json")
 
@@ -186,7 +189,7 @@ func showSplits() {
 	signal.Notify(c, os.Interrupt)
 
 	fmt.Printf("best Splits\n")
-	printTimes(buleTimes, 1)
+	printTimes(buleTimes, info, splits)
 	fmt.Printf("-----------------------------------------------\n")
 }
 
@@ -253,14 +256,14 @@ func loadTimes(path string) map[Level]time.Duration {
 	return m
 }
 
-func printTimes(times map[Level]time.Duration, view int) {
+func printTimes(times map[Level]time.Duration, info bool, splits bool) {
 	total := time.Duration(0)
 	pbTotal := time.Duration(0)
 	besttotal := time.Duration(0)
 	pbSplit := time.Duration(0)
 	buleSplit := time.Duration(0)
 
-	if view == 1 || view == 3 {
+	if splits {
 		fmt.Printf("%20s  %7s  %7s  %7s\n", "Chapter", "Time", "Diff", "Split")
 	} else {
 		fmt.Printf("%20s  %7s  %7s\n", "Chapter", "Time", "Diff")
@@ -275,7 +278,7 @@ func printTimes(times map[Level]time.Duration, view int) {
 		pbTotal += pbD
 
 		if d == 0 {
-			if view == 1 || view == 3 {
+			if splits {
 				fmt.Printf("%20s     -      -       -\n", chapter)
 			} else {
 				fmt.Printf("%20s     -      -\n", chapter)
@@ -287,7 +290,7 @@ func printTimes(times map[Level]time.Duration, view int) {
 				buleSplit += bD
 			}
 		} else {
-			if view == 1 || view == 3 {
+			if splits {
 				fmt.Printf("%20s  %s  %16s  %s\n", chapter, formatWithMinutes(total), formatDiff(total-pbTotal, d < bD), formatWithMinutes(d))
 			} else {
 				fmt.Printf("%20s  %s  %16s\n", chapter, formatWithMinutes(total), formatDiff(total-pbTotal, d < bD))
@@ -296,11 +299,11 @@ func printTimes(times map[Level]time.Duration, view int) {
 			besttotal += d
 		}
 	}
-	if view == 2 {
+	if info {
 		fmt.Printf("---------------------------------------\n")
 		fmt.Printf("%20s  %10s\n", "best possible Time", "PB Split")
 		fmt.Printf("%20s  %10s\n", formatWithMinutes(besttotal), formatWithMinutes(pbSplit))
-	} else if view == 3 {
+	} else if splits && info {
 		fmt.Printf("-----------------------------------------------\n")
 		fmt.Printf("%20s  %10s  %10s\n", "best possible Time", "PB Split", "best Split")
 		fmt.Printf("%20s  %10s  %10s\n", formatWithMinutes(besttotal), formatWithMinutes(pbSplit), formatWithMinutes(buleSplit))
