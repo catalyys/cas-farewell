@@ -20,7 +20,7 @@ Here are all the things you can configure without changing the code.
 | -------- | ------------------------------------- | ------- |
 | run      | start the application (same as executing with nothing)| ./casf run       |
 | help     | shows the help                                      | ./casf help       |
-| show     | shows you personal best or best splits              | ./casf show best or ./cas show splits    |
+| show     | shows you personal best or best splits              | ./casf show best or ./casf show splits    |
 | -i       | gives you more information                          | ./casf -i show best    |
 | -s       | gives you more information about your splits        | ./casf -si run    |
 | -save, -savefile| changes the savefile slot [0, 1, 2]       | ./casf -save 0    |
