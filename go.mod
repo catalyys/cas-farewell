@@ -1,4 +1,4 @@
-module github.com/DevilFreak/cas-farewell/casf
+module github.com/oryxl/cas-farewell/casf
 
 go 1.14
 
