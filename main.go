@@ -15,7 +15,6 @@ import (
 )
 
 var (
-	saveFile  = os.Getenv("HOME") + "/.local/share/Celeste/Saves/0.celeste"
 	pbTimes   map[Level]time.Duration
 	buleTimes map[Level]time.Duration
 )
@@ -119,7 +118,7 @@ func main() {
 }
 
 func runOverlay(file string, info bool, splits bool) {
-	saveFile = os.Getenv("HOME") + "/.local/share/Celeste/Saves/" + file + ".celeste"
+	var saveFile = os.Getenv("HOME") + "/.local/share/Celeste/Saves/" + file + ".celeste"
 	buleTimes = loadTimes("bule.json")
 	pbTimes = loadTimes("pb.json")
 
