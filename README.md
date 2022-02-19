@@ -12,7 +12,10 @@ go build
 
 ## running cas - farewell
 
-You can just execute the compiled binary and it will start with the default configurations.
+The default folder for Celeste is `~/.local/share/Celeste/Saves/` if you got it from Steam.
+When you have the savefiles in a different folder you can change that in `main.go` line `121`.
+
+You can then just execute the compiled binary and it will start with the default configurations.
 
 Here are all the things you can configure without changing the code.
 
