@@ -25,6 +25,10 @@ Here are all the things you can configure without changing the code.
 | -s       | gives you more information about your splits        | ./casf -si run    |
 | -save, -savefile| changes the savefile slot [0, 1, 2]       | ./casf -save 0    |
 
+### Overlay
+
+To run cas - farewell as an overlay you can simply use a terminal with 100% transparent background and mark as always on top. Then just resize it and move it to where you want your overlay to be.
+
 ## Route configuration
 
 Modify `anyPercent` variable in `types.go`.
