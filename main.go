@@ -163,6 +163,22 @@ func runOverlay(file string, info bool, splits bool) {
 			}
 
 			printTimes(times, info, splits)
+			_, isDone := times[anyPercent[len(anyPercent)-1]]
+			if isDone {
+				var d, pbD time.Duration
+
+				for _, k := range anyPercent {
+					d += times[k]
+					pbD += pbTimes[k]
+
+				}
+
+				if d < pbD {
+					log.Printf("new pb, congratulations!")
+					pbTimes = times
+					saveTimes(pbTimes, "pb.json")
+				}
+			}
 
 		case <-c:
 			buleTimes = mergeBule(times, buleTimes)
