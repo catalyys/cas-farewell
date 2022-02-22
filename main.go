@@ -17,6 +17,7 @@ import (
 var (
 	pbTimes   map[Level]time.Duration
 	buleTimes map[Level]time.Duration
+	old_times map[Level]time.Duration
 )
 
 func main() {
@@ -276,6 +277,19 @@ func loadTimes(path string) map[Level]time.Duration {
 }
 
 func printTimes(times map[Level]time.Duration, info bool, splits bool) {
+	oTotal := time.Duration(0)
+	nTotal := time.Duration(0)
+	for _, chapter := range anyPercent {
+		oTime := old_times[chapter]
+		nTime := times[chapter]
+		oTotal += oTime
+		nTotal += nTime
+	}
+	if oTotal == nTotal {
+		return
+	}
+	old_times = times
+
 	total := time.Duration(0)
 	pbTotal := time.Duration(0)
 	besttotal := time.Duration(0)
