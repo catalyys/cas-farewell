@@ -36,7 +36,7 @@ Here are all the things you can configure without changing the code.
 
 To run cas - farewell as an overlay you can simply use a terminal with 100% transparent background and mark as always on top. Then just resize it and move it to where you want your overlay to be.
 
-I have done it via a bash:
+I have done it via bash:
 ```
 xfce4-terminal --geometry=50x13+0+130 --hide-borders --working-directory="$HOME/git/cas-farewell/" -e "./casf -is" -H
 ```

@@ -96,6 +96,16 @@ func main() {
 				return nil
 			},
 		},
+		{
+			Name:    "test",
+			Aliases: []string{"t"},
+			Usage:   "for dev testing",
+			Flags:   myFlags,
+			Action: func(c *cli.Context) error {
+				saveTimes(loadTimes("test.json"), "test.json")
+				return nil
+			},
+		},
 	}
 
 	// start our application
@@ -265,6 +275,12 @@ func loadTimes(path string) map[Level]time.Duration {
 	return m
 }
 
+func loadEmptyTimes(route string) map[Level]time.Duration {
+	var m map[Level]time.Duration
+
+	return m
+}
+
 func printTimes(times map[Level]time.Duration, info bool, splits bool, routeP string, number bool, side bool) {
 	oTotal := time.Duration(0)
 	nTotal := time.Duration(0)
@@ -415,8 +431,7 @@ func getRun(route string) []Level {
 		return anyPercentB
 	}
 
-	fmt.Printf("%s is not a valid route\n", route)
-	os.Exit(1)
+	log.Fatal("not a valid route\n")
 	return nil
 }
 
