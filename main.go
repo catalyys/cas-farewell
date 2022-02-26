@@ -32,6 +32,8 @@ func main() {
 	myFlags := []cli.Flag{
 		cli.BoolFlag{Name: "splits, s"},
 		cli.BoolFlag{Name: "info, i"},
+		cli.BoolFlag{Name: "number, n"},
+		cli.BoolFlag{Name: "sides, z"},
 		cli.StringFlag{
 			Name:  "savefile, save",
 			Value: "2",
@@ -50,7 +52,7 @@ func main() {
 			fmt.Printf("savefile needs to be 0, 1 or 2\n")
 			return nil
 		}
-		runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), c.String("route"))
+		runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
 		return nil
 	}
 
@@ -65,7 +67,7 @@ func main() {
 					Usage: "show personal best",
 					Flags: myFlags,
 					Action: func(c *cli.Context) error {
-						showBest(c.Bool("info"), c.Bool("splits"), c.String("route"))
+						showBest(c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
 						return nil
 					},
 				},
@@ -74,7 +76,7 @@ func main() {
 					Usage: "show best splits",
 					Flags: myFlags,
 					Action: func(c *cli.Context) error {
-						showSplits(c.Bool("info"), c.Bool("splits"), c.String("route"))
+						showSplits(c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
 						return nil
 					},
 				},
@@ -90,7 +92,7 @@ func main() {
 					fmt.Printf("savefile needs to be 0, 1 or 2\n")
 					return nil
 				}
-				runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), c.String("route"))
+				runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("side"))
 				return nil
 			},
 		},
@@ -103,7 +105,7 @@ func main() {
 	}
 }
 
-func runOverlay(file string, info bool, splits bool, routeP string) {
+func runOverlay(file string, info bool, splits bool, routeP string, number bool, side bool) {
 	var saveFile = os.Getenv("HOME") + "/.local/share/Celeste/Saves/" + file + ".celeste"
 	buleTimes = loadTimes("bule.json")
 	pbTimes = loadTimes("pb.json")
@@ -126,7 +128,7 @@ func runOverlay(file string, info bool, splits bool, routeP string) {
 
 	times := parseSaveFile(saveFile)
 
-	printTimes(times, info, splits, routeP)
+	printTimes(times, info, splits, routeP, number, side)
 	for {
 		select {
 		case ev := <-w.Events:
@@ -150,7 +152,7 @@ func runOverlay(file string, info bool, splits bool, routeP string) {
 				times = parseSaveFile(saveFile)
 			}
 
-			printTimes(times, info, splits, routeP)
+			printTimes(times, info, splits, routeP, number, side)
 			_, isDone := times[route[len(route)-1]]
 			if isDone {
 				var d, pbD time.Duration
@@ -176,7 +178,7 @@ func runOverlay(file string, info bool, splits bool, routeP string) {
 	}
 }
 
-func showBest(info bool, splits bool, route string) {
+func showBest(info bool, splits bool, route string, number bool, side bool) {
 	pbTimes = loadTimes("pb.json")
 	buleTimes = loadTimes("bule.json")
 
@@ -184,11 +186,11 @@ func showBest(info bool, splits bool, route string) {
 	signal.Notify(c, os.Interrupt)
 
 	fmt.Printf("PB Times in %s\n", route)
-	printTimes(pbTimes, info, splits, route)
+	printTimes(pbTimes, info, splits, route, number, side)
 	fmt.Printf("-----------------------------------------------\n")
 }
 
-func showSplits(info bool, splits bool, route string) {
+func showSplits(info bool, splits bool, route string, number bool, side bool) {
 	pbTimes = loadTimes("pb.json")
 	buleTimes = loadTimes("bule.json")
 
@@ -196,7 +198,7 @@ func showSplits(info bool, splits bool, route string) {
 	signal.Notify(c, os.Interrupt)
 
 	fmt.Printf("best Splits in %s\n", route)
-	printTimes(buleTimes, info, splits, route)
+	printTimes(buleTimes, info, splits, route, number, side)
 	fmt.Printf("-----------------------------------------------\n")
 }
 
@@ -263,7 +265,7 @@ func loadTimes(path string) map[Level]time.Duration {
 	return m
 }
 
-func printTimes(times map[Level]time.Duration, info bool, splits bool, routeP string) {
+func printTimes(times map[Level]time.Duration, info bool, splits bool, routeP string, number bool, side bool) {
 	oTotal := time.Duration(0)
 	nTotal := time.Duration(0)
 
@@ -302,9 +304,9 @@ func printTimes(times map[Level]time.Duration, info bool, splits bool, routeP st
 
 		if d == 0 {
 			if splits {
-				fmt.Printf("%20s     -      -       -\n", chapter)
+				fmt.Printf("%20s     -      -       -\n", chapter.String(number, side))
 			} else {
-				fmt.Printf("%20s     -      -\n", chapter)
+				fmt.Printf("%20s     -      -\n", chapter.String(number, side))
 			}
 
 			besttotal += bD
@@ -314,9 +316,9 @@ func printTimes(times map[Level]time.Duration, info bool, splits bool, routeP st
 			}
 		} else {
 			if splits {
-				fmt.Printf("%20s  %s  %16s  %s\n", chapter, formatWithMinutes(total), formatDiff(total-pbTotal, d < bD), formatWithMinutes(d))
+				fmt.Printf("%20s  %s  %16s  %s\n", chapter.String(number, side), formatWithMinutes(total), formatDiff(total-pbTotal, d < bD), formatWithMinutes(d))
 			} else {
-				fmt.Printf("%20s  %s  %16s\n", chapter, formatWithMinutes(total), formatDiff(total-pbTotal, d < bD))
+				fmt.Printf("%20s  %s  %16s\n", chapter.String(number, side), formatWithMinutes(total), formatDiff(total-pbTotal, d < bD))
 			}
 
 			besttotal += d

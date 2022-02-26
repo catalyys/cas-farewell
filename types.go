@@ -11,14 +11,14 @@ type Level struct {
 	Side    Side
 }
 
-func (l Level) String() string {
+func (l Level) String(number bool, side bool) string {
 	switch l.Chapter {
 	case Prologue:
 		fallthrough
 	case Epilogue:
-		return l.Chapter.String()
+		return l.Chapter.String(number)
 	default:
-		return l.Chapter.String() + l.Side.String()
+		return l.Chapter.String(number) + " " + l.Side.String(side)
 	}
 }
 
@@ -123,8 +123,12 @@ func LongChapterName(c Chapter) string {
 	return longChapterName[c]
 }
 
-func (c Chapter) String() string {
-	return longChapterName[c]
+func (c Chapter) String(number bool) string {
+	if number {
+		return shortChapterName[c]
+	} else {
+		return longChapterName[c]
+	}
 }
 
 type Side int
@@ -137,6 +141,10 @@ const (
 
 var sideName = []string{"A", "B", "C"}
 
-func (s Side) String() string {
-	return "" //sideName[s]
+func (s Side) String(side bool) string {
+	if side {
+		return sideName[s]
+	} else {
+		return ""
+	}
 }
