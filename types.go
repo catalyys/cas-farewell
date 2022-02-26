@@ -64,6 +64,17 @@ var anyPercent = []Level{
 	{Chapter7, SideA},
 }
 
+var anyPercentB = []Level{
+	{Prologue, SideA},
+	{Chapter1, SideA},
+	{Chapter2, SideA},
+	{Chapter3, SideA},
+	{Chapter4, SideA},
+	{Chapter5, SideB},
+	{Chapter6, SideB},
+	{Chapter7, SideA},
+}
+
 type Chapter int
 
 const (
@@ -127,5 +138,5 @@ const (
 var sideName = []string{"A", "B", "C"}
 
 func (s Side) String() string {
-	return ""
+	return "" //sideName[s]
 }

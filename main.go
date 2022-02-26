@@ -26,7 +26,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "Celeste Auto Splitter Farewell"
 	app.Usage = "Farewell"
-	app.Version = "0.8"
+	app.Version = "0.9"
 	app.UseShortOptionHandling = true
 
 	myFlags := []cli.Flag{
@@ -37,6 +37,11 @@ func main() {
 			Value: "2",
 			Usage: "indicates the savefile slot `0`, 1 or 2",
 		},
+		cli.StringFlag{
+			Name:  "route, r",
+			Value: "any%",
+			Usage: "indicates the route/run",
+		},
 	}
 	app.Flags = myFlags
 
@@ -45,21 +50,10 @@ func main() {
 			fmt.Printf("savefile needs to be 0, 1 or 2\n")
 			return nil
 		}
-		runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"))
+		runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), c.String("route"))
 		return nil
 	}
 
-	// We'll be using the same flag for all our commands
-	// so we'll define it up here
-	// myFlags := []cli.Flag{
-	// 	cli.StringFlag{
-	// 		Name:  "savefile, save, s",
-	// 		Value: "2",
-	// 		Usage: "indicates the savefile slot `0`, `1` or `2`",
-	// 	},
-	// }
-
-	// we create our commands
 	app.Commands = []cli.Command{
 		{
 			Name:    "show",
@@ -71,7 +65,7 @@ func main() {
 					Usage: "show personal best",
 					Flags: myFlags,
 					Action: func(c *cli.Context) error {
-						showBest(c.Bool("info"), c.Bool("splits"))
+						showBest(c.Bool("info"), c.Bool("splits"), c.String("route"))
 						return nil
 					},
 				},
@@ -80,7 +74,7 @@ func main() {
 					Usage: "show best splits",
 					Flags: myFlags,
 					Action: func(c *cli.Context) error {
-						showSplits(c.Bool("info"), c.Bool("splits"))
+						showSplits(c.Bool("info"), c.Bool("splits"), c.String("route"))
 						return nil
 					},
 				},
@@ -90,22 +84,13 @@ func main() {
 			Name:    "run",
 			Aliases: []string{"r"},
 			Usage:   "start the overlay for the run",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "savefile, save, s",
-					Value: "2",
-					Usage: "indicates the savefile slot `0`, 1 or 2",
-				},
-			},
-			// the action, or code that will be executed when
-			// we execute our `show` command
+			Flags:   myFlags,
 			Action: func(c *cli.Context) error {
 				if c.String("savefile") != "0" && c.String("savefile") != "1" && c.String("savefile") != "2" {
 					fmt.Printf("savefile needs to be 0, 1 or 2\n")
 					return nil
 				}
-				fmt.Println("info:", c.Bool("info"))
-				runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"))
+				runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), c.String("route"))
 				return nil
 			},
 		},
@@ -118,10 +103,11 @@ func main() {
 	}
 }
 
-func runOverlay(file string, info bool, splits bool) {
+func runOverlay(file string, info bool, splits bool, routeP string) {
 	var saveFile = os.Getenv("HOME") + "/.local/share/Celeste/Saves/" + file + ".celeste"
 	buleTimes = loadTimes("bule.json")
 	pbTimes = loadTimes("pb.json")
+	var route = getRun(routeP)
 
 	w, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -136,10 +122,11 @@ func runOverlay(file string, info bool, splits bool) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
+	fmt.Printf("running %s\n", routeP)
+
 	times := parseSaveFile(saveFile)
 
-	printTimes(times, info, splits)
-	//fmt.Fprintf(os.Stderr, "starting loop, press ^C to exit\n")
+	printTimes(times, info, splits, routeP)
 	for {
 		select {
 		case ev := <-w.Events:
@@ -163,12 +150,12 @@ func runOverlay(file string, info bool, splits bool) {
 				times = parseSaveFile(saveFile)
 			}
 
-			printTimes(times, info, splits)
-			_, isDone := times[anyPercent[len(anyPercent)-1]]
+			printTimes(times, info, splits, routeP)
+			_, isDone := times[route[len(route)-1]]
 			if isDone {
 				var d, pbD time.Duration
 
-				for _, k := range anyPercent {
+				for _, k := range route {
 					d += times[k]
 					pbD += pbTimes[k]
 
@@ -189,27 +176,27 @@ func runOverlay(file string, info bool, splits bool) {
 	}
 }
 
-func showBest(info bool, splits bool) {
+func showBest(info bool, splits bool, route string) {
 	pbTimes = loadTimes("pb.json")
 	buleTimes = loadTimes("bule.json")
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
-	fmt.Printf("PB Times\n")
-	printTimes(pbTimes, info, splits)
+	fmt.Printf("PB Times in %s\n", route)
+	printTimes(pbTimes, info, splits, route)
 	fmt.Printf("-----------------------------------------------\n")
 }
 
-func showSplits(info bool, splits bool) {
+func showSplits(info bool, splits bool, route string) {
 	pbTimes = loadTimes("pb.json")
 	buleTimes = loadTimes("bule.json")
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
-	fmt.Printf("best Splits\n")
-	printTimes(buleTimes, info, splits)
+	fmt.Printf("best Splits in %s\n", route)
+	printTimes(buleTimes, info, splits, route)
 	fmt.Printf("-----------------------------------------------\n")
 }
 
@@ -276,10 +263,13 @@ func loadTimes(path string) map[Level]time.Duration {
 	return m
 }
 
-func printTimes(times map[Level]time.Duration, info bool, splits bool) {
+func printTimes(times map[Level]time.Duration, info bool, splits bool, routeP string) {
 	oTotal := time.Duration(0)
 	nTotal := time.Duration(0)
-	for _, chapter := range anyPercent {
+
+	var route = getRun(routeP)
+
+	for _, chapter := range route {
 		oTime := old_times[chapter]
 		nTime := times[chapter]
 		oTotal += oTime
@@ -302,7 +292,7 @@ func printTimes(times map[Level]time.Duration, info bool, splits bool) {
 		fmt.Printf("%20s  %7s  %7s\n", "Chapter", "Time", "Diff")
 	}
 
-	for _, chapter := range anyPercent {
+	for _, chapter := range route {
 		d := times[chapter]
 		pbD := pbTimes[chapter]
 		bD := buleTimes[chapter]
@@ -413,6 +403,19 @@ func mergeBule(old, new map[Level]time.Duration) map[Level]time.Duration {
 	}
 
 	return m
+}
+
+func getRun(route string) []Level {
+	switch route {
+	case "any%":
+		return anyPercent
+	case "any%B":
+		return anyPercentB
+	}
+
+	fmt.Printf("%s is not a valid route\n", route)
+	os.Exit(1)
+	return nil
 }
 
 type SaveData struct {
