@@ -102,7 +102,8 @@ func main() {
 			Usage:   "for dev testing",
 			Flags:   myFlags,
 			Action: func(c *cli.Context) error {
-				saveTimes(loadTimes("test.json"), "test.json")
+				//printTimes(loadEmptyTimes("any%"), true, true, "any%", false, true)
+				//saveTimes(loadEmptyTimes("any%"), "test.json")
 				return nil
 			},
 		},
@@ -117,8 +118,8 @@ func main() {
 
 func runOverlay(file string, info bool, splits bool, routeP string, number bool, side bool) {
 	var saveFile = os.Getenv("HOME") + "/.local/share/Celeste/Saves/" + file + ".celeste"
-	buleTimes = loadTimes("bule.json")
-	pbTimes = loadTimes("pb.json")
+	buleTimes = loadTimes("bule.json", routeP)
+	pbTimes = loadTimes(getFile(routeP), routeP)
 	var route = getRun(routeP)
 
 	w, err := fsnotify.NewWatcher()
@@ -172,11 +173,10 @@ func runOverlay(file string, info bool, splits bool, routeP string, number bool,
 					pbD += pbTimes[k]
 
 				}
-
 				if d < pbD {
 					log.Printf("new pb, congratulations!")
 					pbTimes = times
-					saveTimes(pbTimes, "pb.json")
+					saveTimes(pbTimes, getFile(routeP))
 				}
 			}
 
@@ -189,8 +189,8 @@ func runOverlay(file string, info bool, splits bool, routeP string, number bool,
 }
 
 func showBest(info bool, splits bool, route string, number bool, side bool) {
-	pbTimes = loadTimes("pb.json")
-	buleTimes = loadTimes("bule.json")
+	pbTimes = loadTimes(getFile(route), route)
+	buleTimes = loadTimes("bule.json", route)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -201,8 +201,8 @@ func showBest(info bool, splits bool, route string, number bool, side bool) {
 }
 
 func showSplits(info bool, splits bool, route string, number bool, side bool) {
-	pbTimes = loadTimes("pb.json")
-	buleTimes = loadTimes("bule.json")
+	pbTimes = loadTimes(getFile(route), route)
+	buleTimes = loadTimes("bule.json", route)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -236,7 +236,7 @@ func parseSaveFile(path string) map[Level]time.Duration {
 			if ams.BestTime == 0 {
 				continue
 			}
-			times[Level{area.ID, Side(side)}] = time.Duration(ams.TimePlayed) * 100
+			times[Level{area.ID, Side(side)}] = time.Duration(ams.BestTime) * 100
 		}
 	}
 
@@ -258,25 +258,29 @@ func saveTimes(m map[Level]time.Duration, path string) {
 	}
 }
 
-func loadTimes(path string) map[Level]time.Duration {
+func loadTimes(path string, route string) map[Level]time.Duration {
 	var m map[Level]time.Duration
 
 	f, err := os.Open(path)
 	if err != nil {
-		log.Fatal(err)
+		m = loadEmptyTimes(route)
 	}
 
 	r := json.NewDecoder(f)
 	err = r.Decode(&m)
 	if err != nil {
-		log.Fatal(err)
+		m = loadEmptyTimes(route)
 	}
 
 	return m
 }
 
 func loadEmptyTimes(route string) map[Level]time.Duration {
-	var m map[Level]time.Duration
+	var m = make(map[Level]time.Duration)
+
+	for _, value := range getRun(route) {
+		m[value] = time.Duration(24 * time.Hour)
+	}
 
 	return m
 }
@@ -429,10 +433,26 @@ func getRun(route string) []Level {
 		return anyPercent
 	case "any%B":
 		return anyPercentB
+	case "ForCity":
+		return City
 	}
 
 	log.Fatal("not a valid route\n")
 	return nil
+}
+
+func getFile(route string) string {
+	switch route {
+	case "any%":
+		return "pb.json"
+	case "any%B":
+		return "any%B.json"
+	case "ForCity":
+		return "city.json"
+	}
+
+	log.Fatal("not a valid route\n")
+	return ""
 }
 
 type SaveData struct {

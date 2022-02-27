@@ -64,6 +64,10 @@ var anyPercent = []Level{
 	{Chapter7, SideA},
 }
 
+var City = []Level{
+	{Chapter1, SideA},
+}
+
 var anyPercentB = []Level{
 	{Prologue, SideA},
 	{Chapter1, SideA},
