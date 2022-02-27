@@ -46,7 +46,7 @@ and then mark as always on top (ALT + Spacebar to open menu):
 
 ## Route configuration
 
-To show all pre configured Runs you can run `./casf show routes` to display all the routes.
+To show all pre configured runs you can run `./casf show routes` to display all the routes.
 To make a custum Run you need to modify the `anyPercent` variable in `types.go`.
 An easier way is coming with a later version.
 
