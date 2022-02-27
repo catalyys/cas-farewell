@@ -11,14 +11,18 @@ type Level struct {
 	Side    Side
 }
 
-func (l Level) String() string {
+func (l Level) String(number bool, side bool) string {
 	switch l.Chapter {
 	case Prologue:
 		fallthrough
 	case Epilogue:
-		return l.Chapter.String()
+		return l.Chapter.String(number)
 	default:
-		return l.Chapter.String() + l.Side.String()
+		if number {
+			return l.Chapter.String(number) + l.Side.String(side)
+		} else {
+			return l.Chapter.String(number) + " " + l.Side.String(side)
+		}
 	}
 }
 
@@ -62,6 +66,45 @@ var anyPercent = []Level{
 	{Chapter5, SideA},
 	{Chapter6, SideA},
 	{Chapter7, SideA},
+}
+
+var City = []Level{
+	{Chapter1, SideA},
+}
+
+var anyPercentB = []Level{
+	{Prologue, SideA},
+	{Chapter1, SideA},
+	{Chapter2, SideA},
+	{Chapter3, SideA},
+	{Chapter4, SideA},
+	{Chapter5, SideB},
+	{Chapter6, SideB},
+	{Chapter7, SideA},
+}
+
+func getAllRoutes() map[string][]Level {
+	var allRoutes = make(map[string][]Level)
+
+	allRoutes["any%"] = anyPercent
+	allRoutes["any%B"] = anyPercentB
+	allRoutes["ForCity"] = City
+
+	return allRoutes
+}
+
+func listChapters(levels []Level) string {
+	var s string
+	var i int = 0
+
+	for _, value := range levels {
+		s = s + value.String(true, true)
+		if i < len(levels)-1 {
+			s = s + "->"
+		}
+		i++
+	}
+	return fmt.Sprint(s)
 }
 
 type Chapter int
@@ -108,12 +151,12 @@ var longChapterName = []string{
 	"Farewell",
 }
 
-func LongChapterName(c Chapter) string {
-	return longChapterName[c]
-}
-
-func (c Chapter) String() string {
-	return longChapterName[c]
+func (c Chapter) String(number bool) string {
+	if number {
+		return shortChapterName[c]
+	} else {
+		return longChapterName[c]
+	}
 }
 
 type Side int
@@ -126,6 +169,10 @@ const (
 
 var sideName = []string{"A", "B", "C"}
 
-func (s Side) String() string {
-	return ""
+func (s Side) String(side bool) string {
+	if side {
+		return sideName[s]
+	} else {
+		return ""
+	}
 }
