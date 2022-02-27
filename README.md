@@ -13,7 +13,7 @@ go build
 ## running cas - farewell
 
 The default folder for Celeste is `~/.local/share/Celeste/Saves/` if you got it from Steam.
-When you have the savefiles in a different folder you can change that in `main.go` line `121`.
+When you have the savefiles in a different folder you can change that in `main.go`.
 
 You can then just execute the compiled binary and it will start with the default configurations.
 
@@ -46,7 +46,8 @@ and then mark as always on top (ALT + Spacebar to open menu):
 
 ## Route configuration
 
-Modify `anyPercent` variable in `types.go`.
+To show all pre configured Runs you can run `./casf show routes` to display all the routes.
+To make a custum Run you need to modify the `anyPercent` variable in `types.go`.
 An easier way is coming with a later version.
 
 ## Showcase
