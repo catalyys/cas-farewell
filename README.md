@@ -47,6 +47,7 @@ and then mark as always on top (ALT + Spacebar to open menu):
 ## Route configuration
 
 Modify `anyPercent` variable in `types.go`.
+An easier way is coming with a later version.
 
 ## Showcase
 
