@@ -23,7 +23,7 @@ Here are all the things you can configure without changing the code.
 | -------- | ------------------------------------- | ------- |
 | run      | start the application (same as executing with nothing)| ./casf run       |
 | help     | shows the help                                      | ./casf help       |
-| show     | shows you personal best or best splits              | ./casf show best or ./casf show splits    |
+| show     | shows you personal best or best splits              | ./casf show splits    |
 | -i       | gives you more information                          | ./casf show best -i |
 | -s       | gives you more information about your splits        | ./casf run -is    |
 | -n       | changes chapter names to numbers                    | ./casf -n    |

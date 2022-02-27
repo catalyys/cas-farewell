@@ -80,6 +80,15 @@ func main() {
 						return nil
 					},
 				},
+				{
+					Name:  "routes",
+					Usage: "show all pre configured routes",
+					Flags: myFlags,
+					Action: func(c *cli.Context) error {
+						listRoutes()
+						return nil
+					},
+				},
 			},
 		},
 		{
@@ -104,6 +113,7 @@ func main() {
 			Action: func(c *cli.Context) error {
 				//printTimes(loadEmptyTimes("any%"), true, true, "any%", false, true)
 				//saveTimes(loadEmptyTimes("any%"), "test.json")
+				listRoutes()
 				return nil
 			},
 		},
@@ -425,6 +435,17 @@ func mergeBule(old, new map[Level]time.Duration) map[Level]time.Duration {
 	}
 
 	return m
+}
+
+func listRoutes() {
+	var m = getAllRoutes()
+
+	fmt.Printf("%9s  %25s\n", "Route", "Chapters")
+	fmt.Printf("------------------------------------------------\n")
+
+	for key, value := range m {
+		fmt.Printf("%9s  %25s\n", key, listChapters(value))
+	}
 }
 
 func getRun(route string) []Level {

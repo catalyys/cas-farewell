@@ -18,7 +18,11 @@ func (l Level) String(number bool, side bool) string {
 	case Epilogue:
 		return l.Chapter.String(number)
 	default:
-		return l.Chapter.String(number) + " " + l.Side.String(side)
+		if number {
+			return l.Chapter.String(number) + l.Side.String(side)
+		} else {
+			return l.Chapter.String(number) + " " + l.Side.String(side)
+		}
 	}
 }
 
@@ -79,6 +83,30 @@ var anyPercentB = []Level{
 	{Chapter7, SideA},
 }
 
+func getAllRoutes() map[string][]Level {
+	var allRoutes = make(map[string][]Level)
+
+	allRoutes["any%"] = anyPercent
+	allRoutes["any%B"] = anyPercentB
+	allRoutes["ForCity"] = City
+
+	return allRoutes
+}
+
+func listChapters(levels []Level) string {
+	var s string
+	var i int = 0
+
+	for _, value := range levels {
+		s = s + value.String(true, true)
+		if i < len(levels)-1 {
+			s = s + "->"
+		}
+		i++
+	}
+	return fmt.Sprint(s)
+}
+
 type Chapter int
 
 const (
@@ -121,10 +149,6 @@ var longChapterName = []string{
 	"Epilogue",
 	"Core",
 	"Farewell",
-}
-
-func LongChapterName(c Chapter) string {
-	return longChapterName[c]
 }
 
 func (c Chapter) String(number bool) string {
