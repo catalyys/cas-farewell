@@ -136,10 +136,10 @@ func parseSaveFile(path string) map[Level]time.Duration {
 
 	for _, area := range s.Areas {
 		for side, ams := range area.AreaModeStats {
-			if ams.BestTime == 0 {
+			if ams.TimePlayed == 0 {
 				continue
 			}
-			times[Level{area.ID, Side(side)}] = time.Duration(ams.BestTime) * 100
+			times[Level{area.ID, Side(side)}] = time.Duration(ams.TimePlayed) * 100
 		}
 	}
 
