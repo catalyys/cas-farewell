@@ -15,7 +15,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "Celeste Auto Splitter Farewell"
 	app.Usage = "Farewell"
-	app.Version = "0.9"
+	app.Version = "0.9.6"
 	app.UseShortOptionHandling = true
 
 	myFlags := []cli.Flag{

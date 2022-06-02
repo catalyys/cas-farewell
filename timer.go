@@ -77,7 +77,7 @@ func runOverlay(file string, info bool, splits bool, routeP string, number bool,
 
 				}
 				if d < pbD {
-					log.Printf("new pb, congratulations!")
+					//log.Printf("new pb, congratulations!")
 					pbTimes = times
 					saveTimes(pbTimes, getFile(routeP))
 				}
@@ -333,11 +333,11 @@ func mergeBule(old, new map[Level]time.Duration) map[Level]time.Duration {
 func listRoutes() {
 	var m = getAllRoutes()
 
-	fmt.Printf("%9s  %25s\n", "Route", "Chapters")
-	fmt.Printf("------------------------------------------------\n")
+	fmt.Printf("%9s | %25s\n", "Route", "Chapters")
+	fmt.Printf("----------|--------------------------------------\n")
 
 	for key, value := range m {
-		fmt.Printf("%9s  %25s\n", key, listChapters(value))
+		fmt.Printf("%9s | %25s\n", key, listChapters(value))
 	}
 }
 
