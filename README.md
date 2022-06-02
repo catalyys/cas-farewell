@@ -32,6 +32,18 @@ Here are all the things you can configure without changing the code.
 | -route, -r| changes the route of the run      | ./casf -route any%B    |
 
 
+#### show arguments
+
+
+| Argument | Usage                                 | example |
+| -------- | ------------------------------------- | ------- |
+| best     |  shows personal best                  | ./casf show best       |
+| splits   | shows best splits                     | ./casf show splits       |
+| routes   | shows all routes                      | ./casf show routes    |
+
+
+
+
 ### Overlay
 
 To run cas - farewell as an overlay you can simply use a terminal with 100% transparent background and mark as always on top. Then just resize it and move it to where you want your overlay to be.
