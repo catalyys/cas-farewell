@@ -2,6 +2,19 @@
 
 Celeste Auto-Splitter for Linux.
 
+## Roadmap
+
+- [ ] load empty times better and display sane numbers
+- [ ] make command line easier
+	- [ ] some commands cant be chained together properly
+- [ ] make all pb files one
+	- [ ] move file to .config or similar
+	- [ ] import old pb files
+- [ ] a way to make easy custom routes
+	- [ ] switch route mid run (any% -> any%B)
+- [ ] more settings
+	- [ ] nicknames for level per run
+
 ## Installing
 
 ```
