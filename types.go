@@ -78,7 +78,9 @@ var anyPercentB = []Level{
 	{Chapter2, SideA},
 	{Chapter3, SideA},
 	{Chapter4, SideA},
+	{Chapter5, SideA},
 	{Chapter5, SideB},
+	{Chapter6, SideA},
 	{Chapter6, SideB},
 	{Chapter7, SideA},
 }

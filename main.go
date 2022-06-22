@@ -90,7 +90,7 @@ func main() {
 					fmt.Printf("savefile needs to be 0, 1 or 2\n")
 					return nil
 				}
-				runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("side"))
+				runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
 				return nil
 			},
 		},
