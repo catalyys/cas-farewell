@@ -1,6 +1,8 @@
 package main
 
 import (
+	"casf/handler"
+	"casf/timer"
 	"fmt"
 	"log"
 	"os"
@@ -11,6 +13,7 @@ import (
 
 func main() {
 	color.NoColor = false
+	handler.FirstBoot()
 
 	app := cli.NewApp()
 	app.Name = "Celeste Auto Splitter Farewell"
@@ -41,7 +44,7 @@ func main() {
 			fmt.Printf("savefile needs to be 0, 1 or 2\n")
 			return nil
 		}
-		runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
+		timer.RunOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
 		return nil
 	}
 
@@ -56,7 +59,7 @@ func main() {
 					Usage: "show personal best",
 					Flags: myFlags,
 					Action: func(c *cli.Context) error {
-						showBest(c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
+						timer.ShowBest(c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
 						return nil
 					},
 				},
@@ -65,7 +68,7 @@ func main() {
 					Usage: "show best splits",
 					Flags: myFlags,
 					Action: func(c *cli.Context) error {
-						showSplits(c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
+						timer.ShowSplits(c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
 						return nil
 					},
 				},
@@ -74,7 +77,7 @@ func main() {
 					Usage: "show all pre configured routes",
 					Flags: myFlags,
 					Action: func(c *cli.Context) error {
-						listRoutes()
+						timer.ListRoutes()
 						return nil
 					},
 				},
@@ -90,7 +93,7 @@ func main() {
 					fmt.Printf("savefile needs to be 0, 1 or 2\n")
 					return nil
 				}
-				runOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
+				timer.RunOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
 				return nil
 			},
 		},
@@ -102,7 +105,7 @@ func main() {
 			Action: func(c *cli.Context) error {
 				//printTimes(loadEmptyTimes("any%"), true, true, "any%", false, true)
 				//saveTimes(loadEmptyTimes("any%"), "test.json")
-				listRoutes()
+				timer.ListRoutes()
 				return nil
 			},
 		},

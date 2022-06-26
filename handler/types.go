@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"fmt"
@@ -57,7 +57,7 @@ func (l *Level) UnmarshalText(b []byte) error {
 	return nil
 }
 
-var anyPercent = []Level{
+var AnyPercent = []Level{
 	{Prologue, SideA},
 	{Chapter1, SideA},
 	{Chapter2, SideA},
@@ -72,7 +72,7 @@ var City = []Level{
 	{Chapter1, SideA},
 }
 
-var anyPercentB = []Level{
+var AnyPercentB = []Level{
 	{Prologue, SideA},
 	{Chapter1, SideA},
 	{Chapter2, SideA},
@@ -85,17 +85,17 @@ var anyPercentB = []Level{
 	{Chapter7, SideA},
 }
 
-func getAllRoutes() map[string][]Level {
+func GetAllRoutes() map[string][]Level {
 	var allRoutes = make(map[string][]Level)
 
-	allRoutes["any%"] = anyPercent
-	allRoutes["any%B"] = anyPercentB
+	allRoutes["any%"] = AnyPercent
+	allRoutes["any%B"] = AnyPercentB
 	allRoutes["ForCity"] = City
 
 	return allRoutes
 }
 
-func listChapters(levels []Level) string {
+func ListChapters(levels []Level) string {
 	var s string
 	var i int = 0
 

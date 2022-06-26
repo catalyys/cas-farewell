@@ -1,7 +1,7 @@
-package main
+package timer
 
 import (
-	"encoding/json"
+	"casf/handler"
 	"encoding/xml"
 	"fmt"
 	"log"
@@ -14,15 +14,15 @@ import (
 )
 
 var (
-	pbTimes   map[Level]time.Duration
-	buleTimes map[Level]time.Duration
-	old_times map[Level]time.Duration
+	pbTimes   map[handler.Level]time.Duration
+	buleTimes map[handler.Level]time.Duration
+	old_times map[handler.Level]time.Duration
 )
 
-func runOverlay(file string, info bool, splits bool, routeP string, number bool, side bool) {
+func RunOverlay(file string, info bool, splits bool, routeP string, number bool, side bool) {
 	var saveFile = os.Getenv("HOME") + "/.local/share/Celeste/Saves/" + file + ".celeste"
-	buleTimes = loadTimes("bule.json", routeP)
-	pbTimes = loadTimes(getFile(routeP), routeP)
+	buleTimes = LoadTimes("bule.json")
+	pbTimes = LoadTimes(getFile(routeP))
 	var route = getRun(routeP)
 
 	w, err := fsnotify.NewWatcher()
@@ -49,7 +49,7 @@ func runOverlay(file string, info bool, splits bool, routeP string, number bool,
 			switch ev.Op {
 			case fsnotify.Remove:
 				buleTimes = mergeBule(times, buleTimes)
-				times = make(map[Level]time.Duration)
+				times = make(map[handler.Level]time.Duration)
 
 				f, err := os.OpenFile(saveFile, os.O_CREATE, 0644)
 				if err != nil {
@@ -79,21 +79,21 @@ func runOverlay(file string, info bool, splits bool, routeP string, number bool,
 				if d < pbD {
 					//log.Printf("new pb, congratulations!")
 					pbTimes = times
-					saveTimes(pbTimes, getFile(routeP))
+					SaveTimes(pbTimes)
 				}
 			}
 
 		case <-c:
 			buleTimes = mergeBule(times, buleTimes)
-			saveTimes(buleTimes, "bule.json")
+			SaveTimes(buleTimes)
 			return
 		}
 	}
 }
 
-func showBest(info bool, splits bool, route string, number bool, side bool) {
-	pbTimes = loadTimes(getFile(route), route)
-	buleTimes = loadTimes("bule.json", route)
+func ShowBest(info bool, splits bool, route string, number bool, side bool) {
+	pbTimes = LoadTimes(getFile(route))
+	buleTimes = LoadTimes("bule.json")
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -103,9 +103,9 @@ func showBest(info bool, splits bool, route string, number bool, side bool) {
 	fmt.Printf("-----------------------------------------------\n")
 }
 
-func showSplits(info bool, splits bool, route string, number bool, side bool) {
-	pbTimes = loadTimes(getFile(route), route)
-	buleTimes = loadTimes("bule.json", route)
+func ShowSplits(info bool, splits bool, route string, number bool, side bool) {
+	pbTimes = LoadTimes(getFile(route))
+	buleTimes = LoadTimes("bule.json")
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -115,8 +115,8 @@ func showSplits(info bool, splits bool, route string, number bool, side bool) {
 	fmt.Printf("-----------------------------------------------\n")
 }
 
-func parseSaveFile(path string) map[Level]time.Duration {
-	times := make(map[Level]time.Duration)
+func parseSaveFile(path string) map[handler.Level]time.Duration {
+	times := make(map[handler.Level]time.Duration)
 
 	f, err := os.Open(path)
 	if err != nil {
@@ -139,56 +139,14 @@ func parseSaveFile(path string) map[Level]time.Duration {
 			if ams.TimePlayed == 0 {
 				continue
 			}
-			times[Level{area.ID, Side(side)}] = time.Duration(ams.TimePlayed) * 100
+			times[handler.Level{area.ID, handler.Side(side)}] = time.Duration(ams.TimePlayed) * 100
 		}
 	}
 
 	return times
 }
 
-func saveTimes(m map[Level]time.Duration, path string) {
-	f, err := os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatal(err)
-		fmt.Printf("failed to open\n")
-	}
-
-	w := json.NewEncoder(f)
-	err = w.Encode(m)
-	if err != nil {
-		log.Fatal(err)
-		fmt.Printf("failed to save\n")
-	}
-}
-
-func loadTimes(path string, route string) map[Level]time.Duration {
-	var m map[Level]time.Duration
-
-	f, err := os.Open(path)
-	if err != nil {
-		m = loadEmptyTimes(route)
-	}
-
-	r := json.NewDecoder(f)
-	err = r.Decode(&m)
-	if err != nil {
-		m = loadEmptyTimes(route)
-	}
-
-	return m
-}
-
-func loadEmptyTimes(route string) map[Level]time.Duration {
-	var m = make(map[Level]time.Duration)
-
-	for _, value := range getRun(route) {
-		m[value] = time.Duration(24 * time.Hour)
-	}
-
-	return m
-}
-
-func printTimes(times map[Level]time.Duration, info bool, splits bool, routeP string, number bool, side bool) {
+func printTimes(times map[handler.Level]time.Duration, info bool, splits bool, routeP string, number bool, side bool) {
 	oTotal := time.Duration(0)
 	nTotal := time.Duration(0)
 
@@ -304,54 +262,28 @@ func formatDiff(d time.Duration, isBule bool) string {
 
 }
 
-func mergeBule(old, new map[Level]time.Duration) map[Level]time.Duration {
-	m := make(map[Level]time.Duration)
-
-	for k, v := range old {
-		m[k] = v
-		w, ok := new[k]
-		if !ok {
-			continue
-		} else if w < v {
-			m[k] = w
-		}
-	}
-
-	for k, v := range new {
-		m[k] = v
-		w, ok := old[k]
-		if !ok {
-			continue
-		} else if w < v {
-			m[k] = w
-		}
-	}
-
-	return m
-}
-
-func listRoutes() {
-	var m = getAllRoutes()
+func ListRoutes() {
+	var m = handler.GetAllRoutes()
 
 	fmt.Printf("%9s | %25s\n", "Route", "Chapters")
 	fmt.Printf("----------|--------------------------------------\n")
 
 	for key, value := range m {
-		fmt.Printf("%9s | %25s\n", key, listChapters(value))
+		fmt.Printf("%9s | %25s\n", key, handler.ListChapters(value))
 	}
 }
 
-func getRun(route string) []Level {
+func getRun(route string) []handler.Level {
 	switch route {
 	case "any%":
-		return anyPercent
+		return handler.AnyPercent
 	case "any%B":
-		return anyPercentB
+		return handler.AnyPercentB
 	case "ForCity":
-		return City
+		return handler.City
 	}
 
-	log.Fatal("not a valid route\n")
+	//log.Fatal("not a valid route\n")
 	return nil
 }
 
@@ -365,7 +297,7 @@ func getFile(route string) string {
 		return "city.json"
 	}
 
-	log.Fatal("not a valid route\n")
+	//log.Fatal("not a valid route\n")
 	return ""
 }
 
@@ -375,7 +307,7 @@ type SaveData struct {
 }
 
 type Area struct {
-	ID            Chapter         `xml:",attr"`
+	ID            handler.Chapter `xml:",attr"`
 	AreaModeStats []AreaModeStats `xml:"Modes>AreaModeStats"`
 }
 
