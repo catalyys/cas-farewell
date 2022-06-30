@@ -35,7 +35,7 @@ func (l *Level) UnmarshalText(b []byte) error {
 	if err != nil {
 		return err
 	}
-	if c < 0 || c >= 10 {
+	if c < 0 || c >= 11 {
 		return fmt.Errorf("invalid chapter: %v", c)
 	}
 	(*l).Chapter = Chapter(c)

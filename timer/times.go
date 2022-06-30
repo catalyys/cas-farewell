@@ -4,7 +4,7 @@ import (
 	"casf/handler"
 	"encoding/json"
 	"fmt"
-	"log"
+	"io/ioutil"
 	"os"
 	"time"
 )
@@ -14,51 +14,50 @@ func SaveTimes(m map[handler.Level]time.Duration, typ string) {
 	//run := "any"
 	fmt.Println(typ)
 
-	f, err := os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatal(err)
-		fmt.Printf("failed to open\n")
-	}
-
-	// w := json.NewEncoder(f)
-	// err = w.Encode(m)
-
 	run := handler.Run{m, nil}
 	pb := make(map[string]handler.Run)
 	pb["any"] = run
-	db := handler.File{m, pb, "any"}
 
-	w := json.NewEncoder(f)
-	err = w.Encode(db)
+	buleTimes = mergeBule(m, Loadbule())
 
-	if err != nil {
-		log.Fatal(err)
-		fmt.Printf("failed to save\n")
-	}
+	db := handler.File{buleTimes, pb, "any"}
+
+	file, _ := json.Marshal(db)
+	_ = ioutil.WriteFile(path, file, 0644)
 }
 
-func LoadTimes(route string) map[handler.Level]time.Duration {
+func LoadTimes(route string) handler.File {
 	path := os.Getenv("HOME") + "/.config/casf/casf.json"
-	var m map[handler.Level]time.Duration
+	var file handler.File
 
 	f, err := os.Open(path)
 	if err != nil {
-		m = loadEmptyTimes(route)
+		//file = loadEmptyTimes(route)
+		fmt.Println("error read")
 	}
 
 	r := json.NewDecoder(f)
-	err = r.Decode(&m)
+	err = r.Decode(&file)
 	if err != nil {
-		m = loadEmptyTimes(route)
+		//m = loadEmptyTimes(route)
+		fmt.Println(err)
 	}
 
-	return m
+	return file
 }
 
 func loadEmptyTimes(route string) map[handler.Level]time.Duration {
 	var m = make(map[handler.Level]time.Duration)
 
 	return m
+}
+
+func Loadbule() map[handler.Level]time.Duration {
+	db := LoadTimes("any")
+
+	fmt.Println(db.Bule)
+
+	return db.Bule
 }
 
 func mergeBule(old, new map[handler.Level]time.Duration) map[handler.Level]time.Duration {

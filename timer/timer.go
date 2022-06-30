@@ -21,8 +21,8 @@ var (
 
 func RunOverlay(file string, info bool, splits bool, routeP string, number bool, side bool) {
 	var saveFile = os.Getenv("HOME") + "/.local/share/Celeste/Saves/" + file + ".celeste"
-	buleTimes = LoadTimes("bule.json")
-	pbTimes = LoadTimes(getFile(routeP))
+	//buleTimes = LoadTimes("bule.json")
+	//pbTimes = LoadTimes(getFile(routeP))
 	var route = getRun(routeP)
 
 	w, err := fsnotify.NewWatcher()
@@ -92,8 +92,8 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 }
 
 func ShowBest(info bool, splits bool, route string, number bool, side bool) {
-	pbTimes = LoadTimes(getFile(route))
-	buleTimes = LoadTimes("bule.json")
+	//pbTimes = LoadTimes(getFile(route))
+	//buleTimes = LoadTimes("bule.json")
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -104,8 +104,8 @@ func ShowBest(info bool, splits bool, route string, number bool, side bool) {
 }
 
 func ShowSplits(info bool, splits bool, route string, number bool, side bool) {
-	pbTimes = LoadTimes(getFile(route))
-	buleTimes = LoadTimes("bule.json")
+	// pbTimes = LoadTimes(getFile(route))
+	// buleTimes = LoadTimes("bule.json")
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
