@@ -79,13 +79,13 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 				if d < pbD {
 					//log.Printf("new pb, congratulations!")
 					pbTimes = times
-					SaveTimes(pbTimes)
+					SaveTimes(pbTimes, "pb")
 				}
 			}
 
 		case <-c:
 			buleTimes = mergeBule(times, buleTimes)
-			SaveTimes(buleTimes)
+			SaveTimes(buleTimes, "bule")
 			return
 		}
 	}

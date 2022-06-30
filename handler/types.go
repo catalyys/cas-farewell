@@ -6,11 +6,6 @@ import (
 	"strings"
 )
 
-type Level struct {
-	Chapter Chapter
-	Side    Side
-}
-
 func (l Level) String(number bool, side bool) string {
 	switch l.Chapter {
 	case Prologue:
@@ -109,8 +104,6 @@ func ListChapters(levels []Level) string {
 	return fmt.Sprint(s)
 }
 
-type Chapter int
-
 const (
 	Prologue = iota
 	Chapter1
@@ -160,8 +153,6 @@ func (c Chapter) String(number bool) string {
 		return longChapterName[c]
 	}
 }
-
-type Side int
 
 const (
 	SideA Side = iota

@@ -9,16 +9,28 @@ import (
 	"time"
 )
 
-func SaveTimes(m map[handler.Level]time.Duration) {
+func SaveTimes(m map[handler.Level]time.Duration, typ string) {
 	path := os.Getenv("HOME") + "/.config/casf/casf.json"
+	//run := "any"
+	fmt.Println(typ)
+
 	f, err := os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
 		fmt.Printf("failed to open\n")
 	}
 
+	// w := json.NewEncoder(f)
+	// err = w.Encode(m)
+
+	run := handler.Run{m, nil}
+	pb := make(map[string]handler.Run)
+	pb["any"] = run
+	db := handler.File{m, pb, "any"}
+
 	w := json.NewEncoder(f)
-	err = w.Encode(m)
+	err = w.Encode(db)
+
 	if err != nil {
 		log.Fatal(err)
 		fmt.Printf("failed to save\n")
