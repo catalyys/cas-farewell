@@ -4,11 +4,12 @@ Celeste Auto-Splitter for Linux.
 
 ## Roadmap
 
-- [ ] make all pb files one
-	- [ ] move file to .config or similar
+- [x] make all pb files one
+	- [x] move file to .config
 	- [ ] import old pb files
 - [ ] load empty times better and display sane numbers
 - [ ] a way to make easy custom routes
+	- [ ] load custom run from json
 	- [ ] switch route mid run (any% -> any%B)
 - [ ] make command line easier
 	- [ ] some commands cant be chained together properly
@@ -42,7 +43,7 @@ Here are all the things you can configure without changing the code.
 | -n       | changes chapter names to numbers                    | ./casf -n    |
 | -z       | adds the side letter to chapter                     | ./casf -z   |
 | -save, -savefile| changes the savefile slot [0, 1, 2] _2 is default_      | ./casf -save 0    |
-| -route, -r| changes the route of the run      | ./casf -route any%B    |
+| -route, -r| changes the route of the run      | ./casf -route anyB    |
 
 
 #### show arguments

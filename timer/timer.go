@@ -21,8 +21,8 @@ var (
 
 func RunOverlay(file string, info bool, splits bool, routeP string, number bool, side bool) {
 	var saveFile = os.Getenv("HOME") + "/.local/share/Celeste/Saves/" + file + ".celeste"
-	//buleTimes = LoadTimes("bule.json")
-	//pbTimes = LoadTimes(getFile(routeP))
+	buleTimes = LoadBule()
+	pbTimes = LoadRun(routeP)
 	var route = getRun(routeP)
 
 	w, err := fsnotify.NewWatcher()
@@ -79,21 +79,21 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 				if d < pbD {
 					//log.Printf("new pb, congratulations!")
 					pbTimes = times
-					SaveTimes(pbTimes, "pb")
+					SaveTimes(pbTimes, routeP)
 				}
 			}
 
 		case <-c:
-			buleTimes = mergeBule(times, buleTimes)
-			SaveTimes(buleTimes, "bule")
+			//buleTimes = mergeBule(times, buleTimes)
+			SaveTimes(times, "bule")
 			return
 		}
 	}
 }
 
 func ShowBest(info bool, splits bool, route string, number bool, side bool) {
-	//pbTimes = LoadTimes(getFile(route))
-	//buleTimes = LoadTimes("bule.json")
+	pbTimes = LoadRun("any")
+	buleTimes = LoadBule()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -104,8 +104,8 @@ func ShowBest(info bool, splits bool, route string, number bool, side bool) {
 }
 
 func ShowSplits(info bool, splits bool, route string, number bool, side bool) {
-	// pbTimes = LoadTimes(getFile(route))
-	// buleTimes = LoadTimes("bule.json")
+	pbTimes = LoadRun("any")
+	buleTimes = LoadBule()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -275,9 +275,9 @@ func ListRoutes() {
 
 func getRun(route string) []handler.Level {
 	switch route {
-	case "any%":
+	case "any":
 		return handler.AnyPercent
-	case "any%B":
+	case "anyB":
 		return handler.AnyPercentB
 	case "ForCity":
 		return handler.City
