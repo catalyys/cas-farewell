@@ -14,7 +14,7 @@ Celeste Auto-Splitter for Linux.
 - [ ] make command line easier
 	- [ ] some commands cant be chained together properly
 - [ ] more settings
-	- [ ] nicknames for level per run
+	- [x] nicknames for level per run
 
 ## Installing
 
