@@ -33,7 +33,7 @@ func main() {
 		},
 		cli.StringFlag{
 			Name:  "route, r",
-			Value: "any%",
+			Value: "any",
 			Usage: "indicates the route/run",
 		},
 	}
@@ -94,18 +94,6 @@ func main() {
 					return nil
 				}
 				timer.RunOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
-				return nil
-			},
-		},
-		{
-			Name:    "test",
-			Aliases: []string{"t"},
-			Usage:   "for dev testing",
-			Flags:   myFlags,
-			Action: func(c *cli.Context) error {
-				//printTimes(loadEmptyTimes("any%"), true, true, "any%", false, true)
-				//saveTimes(loadEmptyTimes("any%"), "test.json")
-				timer.ListRoutes()
 				return nil
 			},
 		},
