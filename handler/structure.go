@@ -18,6 +18,10 @@ type Level struct {
 	Side    Side
 }
 
+type Settings struct {
+	Settings map[string]string `json:"settings,omitempty"`
+}
+
 type Side int
 
 type Chapter int

@@ -7,6 +7,12 @@ import (
 )
 
 func (l Level) String(number bool, side bool) string {
+	db := LoadFile()
+
+	if db.Pb["any"].Levelnames[l] != "" {
+		return db.Pb["any"].Levelnames[l]
+	}
+
 	switch l.Chapter {
 	case Prologue:
 		fallthrough

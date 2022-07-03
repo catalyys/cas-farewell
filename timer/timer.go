@@ -21,8 +21,8 @@ var (
 
 func RunOverlay(file string, info bool, splits bool, routeP string, number bool, side bool) {
 	var saveFile = os.Getenv("HOME") + "/.local/share/Celeste/Saves/" + file + ".celeste"
-	buleTimes = LoadBule()
-	pbTimes = LoadRun(routeP)
+	buleTimes = handler.LoadBule()
+	pbTimes = handler.LoadRun(routeP)
 	var route = getRun(routeP)
 
 	w, err := fsnotify.NewWatcher()
@@ -48,7 +48,7 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 		case ev := <-w.Events:
 			switch ev.Op {
 			case fsnotify.Remove:
-				buleTimes = mergeBule(times, buleTimes)
+				buleTimes = handler.MergeBule(times, buleTimes)
 				times = make(map[handler.Level]time.Duration)
 
 				f, err := os.OpenFile(saveFile, os.O_CREATE, 0644)
@@ -79,21 +79,21 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 				if d < pbD {
 					//log.Printf("new pb, congratulations!")
 					pbTimes = times
-					SaveTimes(pbTimes, routeP)
+					handler.SaveTimes(pbTimes, routeP)
 				}
 			}
 
 		case <-c:
 			//buleTimes = mergeBule(times, buleTimes)
-			SaveTimes(times, "bule")
+			handler.SaveTimes(times, "bule")
 			return
 		}
 	}
 }
 
 func ShowBest(info bool, splits bool, route string, number bool, side bool) {
-	pbTimes = LoadRun("any")
-	buleTimes = LoadBule()
+	pbTimes = handler.LoadRun("any")
+	buleTimes = handler.LoadBule()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -104,8 +104,8 @@ func ShowBest(info bool, splits bool, route string, number bool, side bool) {
 }
 
 func ShowSplits(info bool, splits bool, route string, number bool, side bool) {
-	pbTimes = LoadRun("any")
-	buleTimes = LoadBule()
+	pbTimes = handler.LoadRun("any")
+	buleTimes = handler.LoadBule()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -175,19 +175,19 @@ func printTimes(times map[handler.Level]time.Duration, info bool, splits bool, r
 		fmt.Printf("%20s  %7s  %7s\n", "Chapter", "Time", "Diff")
 	}
 
-	for _, chapter := range route {
-		d := times[chapter]
-		pbD := pbTimes[chapter]
-		bD := buleTimes[chapter]
+	for _, level := range route {
+		d := times[level]
+		pbD := pbTimes[level]
+		bD := buleTimes[level]
 
 		total += d
 		pbTotal += pbD
 
 		if d == 0 {
 			if splits {
-				fmt.Printf("%20s     -      -       -\n", chapter.String(number, side))
+				fmt.Printf("%20s     -      -       -\n", level.String(number, side))
 			} else {
-				fmt.Printf("%20s     -      -\n", chapter.String(number, side))
+				fmt.Printf("%20s     -      -\n", level.String(number, side))
 			}
 
 			besttotal += bD
@@ -197,9 +197,9 @@ func printTimes(times map[handler.Level]time.Duration, info bool, splits bool, r
 			}
 		} else {
 			if splits {
-				fmt.Printf("%20s  %s  %16s  %s\n", chapter.String(number, side), formatWithMinutes(total), formatDiff(total-pbTotal, d < bD), formatWithMinutes(d))
+				fmt.Printf("%20s  %s  %16s  %s\n", level.String(number, side), formatWithMinutes(total), formatDiff(total-pbTotal, d < bD), formatWithMinutes(d))
 			} else {
-				fmt.Printf("%20s  %s  %16s\n", chapter.String(number, side), formatWithMinutes(total), formatDiff(total-pbTotal, d < bD))
+				fmt.Printf("%20s  %s  %16s\n", level.String(number, side), formatWithMinutes(total), formatDiff(total-pbTotal, d < bD))
 			}
 
 			besttotal += d

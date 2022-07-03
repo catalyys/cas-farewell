@@ -1,7 +1,6 @@
-package timer
+package handler
 
 import (
-	"casf/handler"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -9,18 +8,18 @@ import (
 	"time"
 )
 
-func SaveTimes(m map[handler.Level]time.Duration, typ string) {
+func SaveTimes(m map[Level]time.Duration, typ string) {
 	path := os.Getenv("HOME") + "/.config/casf/casf.json"
 	//run := "any"
 
-	var db handler.File
+	var db File
 
 	if typ == "bule" {
 		pb := LoadFile().Pb
 
-		buleTimes = mergeBule(m, LoadBule())
+		buleTimes := MergeBule(m, LoadBule())
 
-		db = handler.File{buleTimes, pb, "any"}
+		db = File{buleTimes, pb, "any"}
 
 		file, _ := json.Marshal(db)
 		_ = ioutil.WriteFile(path, file, 0644)
@@ -28,22 +27,22 @@ func SaveTimes(m map[handler.Level]time.Duration, typ string) {
 		return
 	}
 
-	run := handler.Run{m, nil}
-	pb := make(map[string]handler.Run)
+	run := Run{m, LoadFile().Pb["any"].Levelnames}
+	pb := make(map[string]Run)
 	pb["any"] = run
 
-	buleTimes = mergeBule(m, LoadBule())
+	buleTimes := MergeBule(m, LoadBule())
 
-	db = handler.File{buleTimes, pb, "any"}
+	db = File{buleTimes, pb, "any"}
 
 	file, _ := json.Marshal(db)
 	_ = ioutil.WriteFile(path, file, 0644)
 
 }
 
-func LoadFile() handler.File {
+func LoadFile() File {
 	path := os.Getenv("HOME") + "/.config/casf/casf.json"
-	var file handler.File
+	var file File
 
 	f, err := os.Open(path)
 	if err != nil {
@@ -61,26 +60,26 @@ func LoadFile() handler.File {
 	return file
 }
 
-func loadEmptyTimes(route string) map[handler.Level]time.Duration {
-	var m = make(map[handler.Level]time.Duration)
+func loadEmptyTimes(route string) map[Level]time.Duration {
+	var m = make(map[Level]time.Duration)
 
 	return m
 }
 
-func LoadBule() map[handler.Level]time.Duration {
+func LoadBule() map[Level]time.Duration {
 	db := LoadFile()
 
 	return db.Bule
 }
 
-func LoadRun(route string) map[handler.Level]time.Duration {
+func LoadRun(route string) map[Level]time.Duration {
 	db := LoadFile()
 
 	return db.Pb[route].Times
 }
 
-func mergeBule(old, new map[handler.Level]time.Duration) map[handler.Level]time.Duration {
-	m := make(map[handler.Level]time.Duration)
+func MergeBule(old, new map[Level]time.Duration) map[Level]time.Duration {
+	m := make(map[Level]time.Duration)
 
 	for k, v := range old {
 		m[k] = v
