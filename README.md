@@ -19,7 +19,7 @@ Celeste Auto-Splitter for Linux.
 ## Installing
 
 ```
-git clone https://github.com/DevilFreak/cas-farewell.git
+git clone https://github.com/catalyys/cas-farewell.git
 cd cas-farewell/
 go build
 ```
