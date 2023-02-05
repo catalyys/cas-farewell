@@ -2,8 +2,12 @@ package handler
 
 import (
 	"encoding/json"
+	"encoding/xml"
+	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
+	"time"
 )
 
 func FirstBoot() {
@@ -33,4 +37,35 @@ func setDefaults() {
 
 	file, _ := json.Marshal(db)
 	_ = ioutil.WriteFile(path, file, 0644)
+}
+
+func ParseSaveFile(path string) map[Level]time.Duration {
+	times := make(map[Level]time.Duration)
+
+	f, err := os.Open(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	d := xml.NewDecoder(f)
+
+	var s SaveData
+	err = d.Decode(&s)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "corrupted or missing savefile!\n")
+		log.Fatal(err)
+	}
+
+	for _, area := range s.Areas {
+		for side, ams := range area.AreaModeStats {
+			if ams.TimePlayed == 0 {
+				continue
+			}
+			times[Level{Chapter: area.ID, Side: Side(side)}] = time.Duration(ams.TimePlayed) * 100
+		}
+	}
+
+	return times
 }

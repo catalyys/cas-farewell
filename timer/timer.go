@@ -1,15 +1,14 @@
 package timer
 
 import (
+	"casf/formatter"
 	"casf/handler"
-	"encoding/xml"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"time"
 
-	"github.com/fatih/color"
 	"github.com/fsnotify/fsnotify"
 )
 
@@ -40,7 +39,7 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 
 	fmt.Printf("running %s\n", routeP)
 
-	times := parseSaveFile(saveFile)
+	times := handler.ParseSaveFile(saveFile)
 
 	printTimes(times, info, splits, routeP, number, side)
 	for {
@@ -63,7 +62,7 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 			case fsnotify.Chmod:
 				fallthrough
 			case fsnotify.Write:
-				times = parseSaveFile(saveFile)
+				times = handler.ParseSaveFile(saveFile)
 			}
 
 			printTimes(times, info, splits, routeP, number, side)
@@ -113,37 +112,6 @@ func ShowSplits(info bool, splits bool, route string, number bool, side bool) {
 	fmt.Printf("best Splits in %s\n", route)
 	printTimes(buleTimes, info, splits, route, number, side)
 	fmt.Printf("-----------------------------------------------\n")
-}
-
-func parseSaveFile(path string) map[handler.Level]time.Duration {
-	times := make(map[handler.Level]time.Duration)
-
-	f, err := os.Open(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	d := xml.NewDecoder(f)
-
-	var s SaveData
-	err = d.Decode(&s)
-
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "corrupted or missing savefile!\n")
-		log.Fatal(err)
-	}
-
-	for _, area := range s.Areas {
-		for side, ams := range area.AreaModeStats {
-			if ams.TimePlayed == 0 {
-				continue
-			}
-			times[handler.Level{Chapter: area.ID, Side: handler.Side(side)}] = time.Duration(ams.TimePlayed) * 100
-		}
-	}
-
-	return times
 }
 
 func printTimes(times map[handler.Level]time.Duration, info bool, splits bool, routeP string, number bool, side bool) {
@@ -197,9 +165,9 @@ func printTimes(times map[handler.Level]time.Duration, info bool, splits bool, r
 			}
 		} else {
 			if splits {
-				fmt.Printf("%20s  %s  %16s  %s\n", level.String(number, side), formatWithMinutes(total), formatDiff(total, pbTotal, d < bD), formatWithMinutes(d))
+				fmt.Printf("%20s  %s  %16s  %s\n", level.String(number, side), formatter.FormatWithMinutes(total), formatter.FormatDiff(total, pbTotal, d < bD), formatter.FormatWithMinutes(d))
 			} else {
-				fmt.Printf("%20s  %s  %16s\n", level.String(number, side), formatWithMinutes(total), formatDiff(total, pbTotal, d < bD))
+				fmt.Printf("%20s  %s  %16s\n", level.String(number, side), formatter.FormatWithMinutes(total), formatter.FormatDiff(total, pbTotal, d < bD))
 			}
 
 			besttotal += d
@@ -208,64 +176,12 @@ func printTimes(times map[handler.Level]time.Duration, info bool, splits bool, r
 	if splits && info {
 		fmt.Printf("-----------------------------------------------\n")
 		fmt.Printf("%20s  %10s  %10s\n", "best possible Time", "PB Split", "best Split")
-		fmt.Printf("%20s  %10s  %10s\n", formatWithMinutes(besttotal), formatWithMinutes(pbSplit), formatWithMinutes(buleSplit))
+		fmt.Printf("%20s  %10s  %10s\n", formatter.FormatWithMinutes(besttotal), formatter.FormatWithMinutes(pbSplit), formatter.FormatWithMinutes(buleSplit))
 	} else if info {
 		fmt.Printf("---------------------------------------\n")
 		fmt.Printf("%20s  %10s\n", "best possible Time", "PB Split")
-		fmt.Printf("%20s  %10s\n", formatWithMinutes(besttotal), formatWithMinutes(pbSplit))
+		fmt.Printf("%20s  %10s\n", formatter.FormatWithMinutes(besttotal), formatter.FormatWithMinutes(pbSplit))
 	}
-}
-
-func formatWithMinutes(d time.Duration) string {
-	minutes := d / time.Minute
-
-	tenths := d / (100 * time.Millisecond)
-	seconds := d / time.Second
-
-	tenths %= 10
-	seconds %= 60
-
-	return fmt.Sprintf("%02d:%02d.%01d", minutes, seconds, tenths)
-}
-
-func formatDiff(t time.Duration, pb time.Duration, isBule bool) string {
-	d := t - pb
-
-	var sign byte
-	var sprintf func(string, ...interface{}) string
-	if d < 0 {
-		sign = '-'
-		d = -d
-		sprintf = color.New(color.FgGreen).SprintfFunc()
-	} else if d < 100*time.Millisecond {
-		sign = '±'
-		sprintf = color.New(color.FgGreen).SprintfFunc()
-	} else { // at least 100ms difference
-		sign = '+'
-		sprintf = color.New(color.FgRed).SprintfFunc()
-	}
-
-	if pb == 0 {
-		sprintf = color.New(color.FgGreen).SprintfFunc()
-	}
-
-	if isBule {
-		sprintf = color.New(color.FgYellow).SprintfFunc()
-	}
-
-	tenths := d / (100 * time.Millisecond)
-	seconds := d / time.Second
-	minutes := d / time.Minute
-
-	tenths %= 10
-	seconds %= 60
-
-	if d >= 1*time.Minute {
-		return sprintf("%c%d:%02d.%01d", sign, minutes, seconds, tenths)
-	} else {
-		return sprintf("%c%02d.%01d", sign, seconds, tenths)
-	}
-
 }
 
 func ListRoutes() {
@@ -291,33 +207,4 @@ func getRun(route string) []handler.Level {
 
 	//log.Fatal("not a valid route\n")
 	return nil
-}
-
-// func getFile(route string) string {
-// 	switch route {
-// 	case "any%":
-// 		return "pb.json"
-// 	case "any%B":
-// 		return "any%B.json"
-// 	case "ForCity":
-// 		return "city.json"
-// 	}
-
-// 	//log.Fatal("not a valid route\n")
-// 	return ""
-// }
-
-type SaveData struct {
-	xml.Name
-	Areas []Area `xml:"Areas>AreaStats"`
-}
-
-type Area struct {
-	ID            handler.Chapter `xml:",attr"`
-	AreaModeStats []AreaModeStats `xml:"Modes>AreaModeStats"`
-}
-
-type AreaModeStats struct {
-	TimePlayed uint64 `xml:",attr"` // in 10 millionths of a second
-	BestTime   uint64 `xml:",attr"` // in 10 millionths of a second
 }

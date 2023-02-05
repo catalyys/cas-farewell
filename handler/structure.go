@@ -1,6 +1,9 @@
 package handler
 
-import "time"
+import (
+	"encoding/xml"
+	"time"
+)
 
 type File struct {
 	Bule     map[Level]time.Duration `json:"bule"`
@@ -21,3 +24,18 @@ type Level struct {
 type Side int
 
 type Chapter int
+
+type SaveData struct {
+	xml.Name
+	Areas []Area `xml:"Areas>AreaStats"`
+}
+
+type Area struct {
+	ID            Chapter         `xml:",attr"`
+	AreaModeStats []AreaModeStats `xml:"Modes>AreaModeStats"`
+}
+
+type AreaModeStats struct {
+	TimePlayed uint64 `xml:",attr"` // in 10 millionths of a second
+	BestTime   uint64 `xml:",attr"` // in 10 millionths of a second
+}
