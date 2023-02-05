@@ -1,6 +1,7 @@
 package timer
 
 import (
+	"casf/handler"
 	"fmt"
 	"log"
 	"os"
@@ -75,7 +76,7 @@ func StartTimer() {
 					Usage: "show all pre configured routes",
 					Flags: myFlags,
 					Action: func(c *cli.Context) error {
-						ListRoutes()
+						handler.ListRoutes()
 						return nil
 					},
 				},

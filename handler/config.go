@@ -69,3 +69,14 @@ func ParseSaveFile(path string) map[Level]time.Duration {
 
 	return times
 }
+
+func ListRoutes() {
+	var m = GetAllRoutes()
+
+	fmt.Printf("%9s | %25s\n", "Route", "Chapters")
+	fmt.Printf("----------|--------------------------------------\n")
+
+	for key, value := range m {
+		fmt.Printf("%9s | %25s\n", key, ListChapters(value))
+	}
+}

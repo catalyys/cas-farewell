@@ -184,17 +184,6 @@ func printTimes(times map[handler.Level]time.Duration, info bool, splits bool, r
 	}
 }
 
-func ListRoutes() {
-	var m = handler.GetAllRoutes()
-
-	fmt.Printf("%9s | %25s\n", "Route", "Chapters")
-	fmt.Printf("----------|--------------------------------------\n")
-
-	for key, value := range m {
-		fmt.Printf("%9s | %25s\n", key, handler.ListChapters(value))
-	}
-}
-
 func getRun(route string) []handler.Level {
 	switch route {
 	case "any":
