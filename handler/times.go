@@ -18,7 +18,7 @@ func SaveTimes(m map[Level]time.Duration, typ string) {
 
 		buleTimes := MergeBule(m, LoadBule())
 
-		db = File{buleTimes, pb, LoadFile().Settings}
+		db = File{LoadFile().Settings, buleTimes, pb}
 
 		file, _ := json.Marshal(db)
 		_ = ioutil.WriteFile(path, file, 0644)
@@ -32,7 +32,7 @@ func SaveTimes(m map[Level]time.Duration, typ string) {
 
 	buleTimes := MergeBule(m, LoadBule())
 
-	db = File{buleTimes, pb, LoadFile().Settings}
+	db = File{LoadFile().Settings, buleTimes, pb}
 
 	file, _ := json.Marshal(db)
 	_ = ioutil.WriteFile(path, file, 0644)

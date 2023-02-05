@@ -33,7 +33,7 @@ func setDefaults() {
 		"celeste_savefolder": os.Getenv("HOME") + "/.local/share/Celeste/Saves/",
 	}
 
-	db = File{buleTimes, pb, defaultSettings}
+	db = File{defaultSettings, buleTimes, pb}
 
 	file, _ := json.Marshal(db)
 	_ = ioutil.WriteFile(path, file, 0644)
@@ -79,4 +79,8 @@ func ListRoutes() {
 	for key, value := range m {
 		fmt.Printf("%9s | %25s\n", key, ListChapters(value))
 	}
+}
+
+func GetSetting(key string) string {
+	return LoadFile().Settings[key]
 }

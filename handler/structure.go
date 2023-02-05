@@ -6,9 +6,9 @@ import (
 )
 
 type File struct {
+	Settings map[string]string       `json:"settings,omitempty"`
 	Bule     map[Level]time.Duration `json:"bule"`
 	Pb       map[string]Run          `json:"pb,omitempty"`
-	Settings map[string]string       `json:"settings,omitempty"`
 }
 
 type Run struct {

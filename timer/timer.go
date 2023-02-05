@@ -19,7 +19,7 @@ var (
 )
 
 func RunOverlay(file string, info bool, splits bool, routeP string, number bool, side bool) {
-	var saveFile = os.Getenv("HOME") + "/.local/share/Celeste/Saves/" + file + ".celeste"
+	var saveFile = handler.GetSetting("celeste_savefolder") + file + ".celeste"
 	buleTimes = handler.LoadBule()
 	pbTimes = handler.LoadRun(routeP)
 	var route = getRun(routeP)
