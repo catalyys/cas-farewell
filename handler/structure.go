@@ -3,9 +3,9 @@ package handler
 import "time"
 
 type File struct {
-	Bule       map[Level]time.Duration `json:"bule"`
-	Pb         map[string]Run          `json:"pb,omitempty"`
-	Defaultrun string                  `json:"default_run,omitempty"`
+	Bule     map[Level]time.Duration `json:"bule"`
+	Pb       map[string]Run          `json:"pb,omitempty"`
+	Settings map[string]string       `json:"settings,omitempty"`
 }
 
 type Run struct {
@@ -16,10 +16,6 @@ type Run struct {
 type Level struct {
 	Chapter Chapter
 	Side    Side
-}
-
-type Settings struct {
-	Settings map[string]string `json:"settings,omitempty"`
 }
 
 type Side int
