@@ -197,9 +197,9 @@ func printTimes(times map[handler.Level]time.Duration, info bool, splits bool, r
 			}
 		} else {
 			if splits {
-				fmt.Printf("%20s  %s  %16s  %s\n", level.String(number, side), formatWithMinutes(total), formatDiff(total-pbTotal, d < bD), formatWithMinutes(d))
+				fmt.Printf("%20s  %s  %16s  %s\n", level.String(number, side), formatWithMinutes(total), formatDiff(total, pbTotal, d < bD), formatWithMinutes(d))
 			} else {
-				fmt.Printf("%20s  %s  %16s\n", level.String(number, side), formatWithMinutes(total), formatDiff(total-pbTotal, d < bD))
+				fmt.Printf("%20s  %s  %16s\n", level.String(number, side), formatWithMinutes(total), formatDiff(total, pbTotal, d < bD))
 			}
 
 			besttotal += d
@@ -228,7 +228,9 @@ func formatWithMinutes(d time.Duration) string {
 	return fmt.Sprintf("%02d:%02d.%01d", minutes, seconds, tenths)
 }
 
-func formatDiff(d time.Duration, isBule bool) string {
+func formatDiff(t time.Duration, pb time.Duration, isBule bool) string {
+	d := t - pb
+
 	var sign byte
 	var sprintf func(string, ...interface{}) string
 	if d < 0 {
@@ -241,6 +243,10 @@ func formatDiff(d time.Duration, isBule bool) string {
 	} else { // at least 100ms difference
 		sign = '+'
 		sprintf = color.New(color.FgRed).SprintfFunc()
+	}
+
+	if pb == 0 {
+		sprintf = color.New(color.FgGreen).SprintfFunc()
 	}
 
 	if isBule {
