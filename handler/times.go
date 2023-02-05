@@ -2,15 +2,11 @@ package handler
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"time"
 )
 
 func SaveTimes(m map[Level]time.Duration, typ string) {
-	path := os.Getenv("HOME") + "/.config/casf/casf.json"
-	//run := "any"
-
 	var db File
 
 	if typ == "bule" {
@@ -18,10 +14,9 @@ func SaveTimes(m map[Level]time.Duration, typ string) {
 
 		buleTimes := MergeBule(m, LoadBule())
 
-		db = File{LoadFile().Settings, buleTimes, pb}
+		db = File{LoadFile().Settings, LoadFile().DefaultCustomsNames, buleTimes, pb}
 
-		file, _ := json.Marshal(db)
-		_ = ioutil.WriteFile(path, file, 0644)
+		saveConfig(db)
 
 		return
 	}
@@ -32,11 +27,9 @@ func SaveTimes(m map[Level]time.Duration, typ string) {
 
 	buleTimes := MergeBule(m, LoadBule())
 
-	db = File{LoadFile().Settings, buleTimes, pb}
+	db = File{LoadFile().Settings, LoadFile().DefaultCustomsNames, buleTimes, pb}
 
-	file, _ := json.Marshal(db)
-	_ = ioutil.WriteFile(path, file, 0644)
-
+	saveConfig(db)
 }
 
 func LoadFile() File {

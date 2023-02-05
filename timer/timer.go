@@ -138,9 +138,9 @@ func printTimes(times map[handler.Level]time.Duration, info bool, splits bool, r
 	buleSplit := time.Duration(0)
 
 	if splits {
-		fmt.Printf("%20s  %7s  %7s  %7s\n", "Chapter", "Time", "Diff", "Split")
+		fmt.Printf("%20s  %7s  %7s  %7s\n", "Chapter ", "Time", "Diff", "Split")
 	} else {
-		fmt.Printf("%20s  %7s  %7s\n", "Chapter", "Time", "Diff")
+		fmt.Printf("%20s  %7s  %7s\n", "Chapter ", "Time", "Diff")
 	}
 
 	for _, level := range route {
@@ -153,9 +153,9 @@ func printTimes(times map[handler.Level]time.Duration, info bool, splits bool, r
 
 		if d == 0 {
 			if splits {
-				fmt.Printf("%20s     -      -       -\n", level.String(number, side))
+				fmt.Printf("%20s     -        -      -\n", level.String(number, side))
 			} else {
-				fmt.Printf("%20s     -      -\n", level.String(number, side))
+				fmt.Printf("%20s     -        -\n", level.String(number, side))
 			}
 
 			besttotal += bD

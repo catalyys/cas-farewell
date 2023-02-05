@@ -10,19 +10,23 @@ func (l Level) String(number bool, side bool) string {
 	db := LoadFile()
 
 	if db.Pb["any"].Levelnames[l] != "" {
-		return db.Pb["any"].Levelnames[l]
+		return db.Pb["any"].Levelnames[l] + " "
+	}
+
+	if db.DefaultCustomsNames[l] != "" {
+		return db.DefaultCustomsNames[l] + " "
 	}
 
 	switch l.Chapter {
 	case Prologue:
 		fallthrough
-	case Epilogue:
-		return l.Chapter.String(number)
+	// case Epilogue:
+	// 	return l.Chapter.String(number)
 	default:
 		if number {
-			return l.Chapter.String(number) + l.Side.String(side)
+			return l.Chapter.String(number) + " " + l.Side.String(side) + " "
 		} else {
-			return l.Chapter.String(number) + " " + l.Side.String(side)
+			return l.Chapter.String(number) + l.Side.String(side) + " "
 		}
 	}
 }
@@ -119,7 +123,7 @@ const (
 	Chapter5
 	Chapter6
 	Chapter7
-	Epilogue
+	// Epilogue
 	Chapter8
 	Chapter9
 )
@@ -133,7 +137,7 @@ var shortChapterName = []string{
 	"5",
 	"6",
 	"7",
-	"Epilogue",
+	// "Epilogue",
 	"8",
 	"9",
 }
@@ -147,7 +151,7 @@ var longChapterName = []string{
 	"Mirror Temple",
 	"Reflection",
 	"The Summit",
-	"Epilogue",
+	// "Epilogue",
 	"Core",
 	"Farewell",
 }
