@@ -17,7 +17,7 @@ func StartTimer() {
 	app := cli.NewApp()
 	app.Name = "Celeste Auto Splitter Farewell"
 	app.Usage = "Farewell"
-	app.Version = "0.9.7"
+	app.Version = "0.9.9"
 	app.UseShortOptionHandling = true
 
 	myFlags := []cli.Flag{
@@ -37,6 +37,20 @@ func StartTimer() {
 		},
 	}
 	app.Flags = myFlags
+
+	importFlags := []cli.Flag{
+		cli.BoolFlag{Name: "pb, p"},
+		cli.BoolFlag{Name: "bule, b"},
+		cli.StringFlag{
+			Name:  "file",
+			Usage: "filepath of the pb or bule file to import",
+		},
+		cli.StringFlag{
+			Name:  "run",
+			Value: "any",
+			Usage: "name of the run to import the pb",
+		},
+	}
 
 	app.Action = func(c *cli.Context) error {
 		if c.String("savefile") != "0" && c.String("savefile") != "1" && c.String("savefile") != "2" {
@@ -93,6 +107,22 @@ func StartTimer() {
 					return nil
 				}
 				RunOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
+				return nil
+			},
+		},
+		{
+			Name:    "import",
+			Aliases: []string{"i "},
+			Usage:   "import pre v1 pb and bule files",
+			Flags:   importFlags,
+			Action: func(c *cli.Context) error {
+				if c.Bool("pb") {
+					handler.ImportOldPb(c.String("file"), c.String("run"))
+					return nil
+				} else if c.Bool("bule") {
+					handler.ImportOldBule(c.String("file"))
+					return nil
+				}
 				return nil
 			},
 		},

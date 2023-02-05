@@ -63,6 +63,37 @@ func setDefaults() {
 	saveConfig(db)
 }
 
+func LoadFile() File {
+	path := os.Getenv("HOME") + "/.config/casf/casf.json"
+	// size, err : := os.Stat("/.config/casf/casf.json").Size()
+	// if err != nil {
+	//     log.Fatal(err)
+	// }
+
+	// if size == 0 {
+	// 	fd
+	// }
+
+	var file File
+
+	f, err := os.Open(path)
+	if err != nil {
+		//file = loadEmptyTimes(route)
+		// log.Fatalln(err)
+		return loadEmptyFile()
+	}
+
+	r := json.NewDecoder(f)
+	err = r.Decode(&file)
+	if err != nil {
+		//m = loadEmptyTimes(route)
+		// log.Fatalln(err)
+		return loadEmptyFile()
+	}
+
+	return file
+}
+
 func ParseSaveFile(path string) map[Level]time.Duration {
 	times := make(map[Level]time.Duration)
 
@@ -114,4 +145,53 @@ func ListRoutes() {
 
 func GetSetting(key string) string {
 	return LoadFile().Settings[key]
+}
+
+func ImportOldPb(file string, cat string) {
+	var pb map[Level]time.Duration
+
+	f, err := os.Open(file)
+	if err != nil {
+		//file = loadEmptyTimes(route)
+		log.Fatalln(err)
+	}
+
+	r := json.NewDecoder(f)
+	err = r.Decode(&pb)
+	if err != nil {
+		//m = loadEmptyTimes(route)
+		log.Fatalln(err)
+	}
+
+	pbs := LoadFile().Pb
+
+	run := Run{pb, pbs[cat].Levelnames}
+	pbs[cat] = run
+
+	db := File{LoadFile().Settings, LoadFile().DefaultCustomsNames, LoadBule(), pbs}
+
+	saveConfig(db)
+}
+
+func ImportOldBule(file string) {
+	var bule map[Level]time.Duration
+
+	f, err := os.Open(file)
+	if err != nil {
+		//file = loadEmptyTimes(route)
+		log.Fatalln(err)
+	}
+
+	r := json.NewDecoder(f)
+	err = r.Decode(&bule)
+	if err != nil {
+		//m = loadEmptyTimes(route)
+		log.Fatalln(err)
+	}
+
+	m := MergeBule(bule, LoadBule())
+
+	db := File{LoadFile().Settings, LoadFile().DefaultCustomsNames, m, LoadFile().Pb}
+
+	saveConfig(db)
 }
