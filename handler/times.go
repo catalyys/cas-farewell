@@ -1,6 +1,10 @@
 package handler
 
 import (
+	"encoding/xml"
+	"fmt"
+	"log"
+	"os"
 	"time"
 )
 
@@ -28,6 +32,37 @@ func SaveTimes(m map[Level]time.Duration, typ string) {
 	db = File{LoadFile().Settings, LoadFile().DefaultCustomsNames, buleTimes, pb}
 
 	saveConfig(db)
+}
+
+func ParseSaveFile(path string) map[Level]time.Duration {
+	times := make(map[Level]time.Duration)
+
+	f, err := os.Open(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	d := xml.NewDecoder(f)
+
+	var s SaveData
+	err = d.Decode(&s)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "corrupted or missing savefile!\n")
+		log.Fatal(err)
+	}
+
+	for _, area := range s.Areas {
+		for side, ams := range area.AreaModeStats {
+			if ams.TimePlayed == 0 {
+				continue
+			}
+			times[Level{Chapter: area.ID, Side: Side(side)}] = time.Duration(ams.TimePlayed) * 100
+		}
+	}
+
+	return times
 }
 
 // func loadEmptyTimes(route string) map[Level]time.Duration {

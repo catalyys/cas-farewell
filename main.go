@@ -12,7 +12,5 @@ func main() {
 		handler.FirstBoot()
 	}
 
-	handler.FirstBoot()
-
 	timer.StartTimer()
 }

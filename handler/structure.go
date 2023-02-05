@@ -14,7 +14,7 @@ type File struct {
 
 type Run struct {
 	Times      map[Level]time.Duration `json:"times"`
-	Levelnames map[Level]string        `json:"level_names,omitempty"`
+	Levelnames map[Level]string        `json:"level_names"`
 }
 
 type Level struct {

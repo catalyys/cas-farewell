@@ -42,7 +42,7 @@ func StartTimer() {
 		cli.BoolFlag{Name: "pb, p"},
 		cli.BoolFlag{Name: "bule, b"},
 		cli.StringFlag{
-			Name:  "file",
+			Name:  "file, f",
 			Usage: "filepath of the pb or bule file to import",
 		},
 		cli.StringFlag{

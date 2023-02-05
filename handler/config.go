@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -88,41 +87,13 @@ func LoadFile() File {
 	if err != nil {
 		//m = loadEmptyTimes(route)
 		// log.Fatalln(err)
+		fmt.Println("unable to decode json")
 		return loadEmptyFile()
 	}
 
+	f.Close()
+
 	return file
-}
-
-func ParseSaveFile(path string) map[Level]time.Duration {
-	times := make(map[Level]time.Duration)
-
-	f, err := os.Open(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	d := xml.NewDecoder(f)
-
-	var s SaveData
-	err = d.Decode(&s)
-
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "corrupted or missing savefile!\n")
-		log.Fatal(err)
-	}
-
-	for _, area := range s.Areas {
-		for side, ams := range area.AreaModeStats {
-			if ams.TimePlayed == 0 {
-				continue
-			}
-			times[Level{Chapter: area.ID, Side: Side(side)}] = time.Duration(ams.TimePlayed) * 100
-		}
-	}
-
-	return times
 }
 
 func saveConfig(db File) {
@@ -164,6 +135,10 @@ func ImportOldPb(file string, cat string) {
 	}
 
 	pbs := LoadFile().Pb
+
+	if pbs == nil {
+		pbs = map[string]Run{}
+	}
 
 	run := Run{pb, pbs[cat].Levelnames}
 	pbs[cat] = run
