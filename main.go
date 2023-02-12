@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	if _, err := os.Stat(os.Getenv("HOME") + "/.config/casf"); errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat(os.Getenv("HOME") + "/.config/casf/casf.json"); errors.Is(err, os.ErrNotExist) {
 		handler.FirstBoot()
 	}
 

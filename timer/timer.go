@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"time"
 
+	tm "github.com/buger/goterm"
 	"github.com/fsnotify/fsnotify"
 )
 
@@ -19,6 +20,9 @@ var (
 )
 
 func RunOverlay(file string, info bool, splits bool, routeP string, number bool, side bool) {
+	tm.Clear()
+	tm.MoveCursor(1, 1)
+	tm.Flush()
 	var saveFile = handler.GetSetting("celeste_savefolder") + file + ".celeste"
 	buleTimes = handler.LoadBule()
 	pbTimes = handler.LoadRun(routeP)
@@ -38,6 +42,7 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 	signal.Notify(c, os.Interrupt)
 
 	fmt.Printf("running %s\n", routeP)
+	// tm.Flush()
 
 	times := handler.ParseSaveFile(saveFile)
 
@@ -65,7 +70,11 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 				times = handler.ParseSaveFile(saveFile)
 			}
 
+			tm.Flush()
+			tm.Clear()
+
 			printTimes(times, info, splits, routeP, number, side)
+
 			_, isDone := times[route[len(route)-1]]
 			if isDone {
 				var d, pbD time.Duration
