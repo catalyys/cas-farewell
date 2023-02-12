@@ -44,6 +44,14 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 	fmt.Printf("running %s\n", routeP)
 	// tm.Flush()
 
+	// tm.Clear()
+	// tm.MoveCursor(1, 1)
+	// tm.Flush()
+	// fmt.Printf("testing %s\n", routeP)
+	// tm.Clear()
+	// tm.MoveCursor(1, 1)
+	// tm.Flush()
+
 	times := handler.ParseSaveFile(saveFile)
 
 	printTimes(times, info, splits, routeP, number, side)
@@ -69,9 +77,6 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 			case fsnotify.Write:
 				times = handler.ParseSaveFile(saveFile)
 			}
-
-			tm.Flush()
-			tm.Clear()
 
 			printTimes(times, info, splits, routeP, number, side)
 
@@ -138,6 +143,11 @@ func printTimes(times map[handler.Level]time.Duration, info bool, splits bool, r
 	if oTotal == nTotal {
 		return
 	}
+
+	tm.Clear()
+	tm.MoveCursor(1, 1)
+	tm.Flush()
+
 	old_times = times
 
 	total := time.Duration(0)
@@ -153,6 +163,7 @@ func printTimes(times map[handler.Level]time.Duration, info bool, splits bool, r
 	}
 
 	for _, level := range route {
+
 		d := times[level]
 		pbD := pbTimes[level]
 		bD := buleTimes[level]

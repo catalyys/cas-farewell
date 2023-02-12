@@ -17,7 +17,7 @@ func StartTimer() {
 	app := cli.NewApp()
 	app.Name = "Celeste Auto Splitter Farewell"
 	app.Usage = "Farewell"
-	app.Version = "0.9.9"
+	app.Version = "1.0.0"
 	app.UseShortOptionHandling = true
 
 	myFlags := []cli.Flag{
