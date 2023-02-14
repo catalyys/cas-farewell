@@ -33,9 +33,15 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 		log.Fatal(err)
 	}
 
-	err = w.Add(saveFile)
-	if err != nil {
-		log.Fatal(err)
+	// err = w.Add(saveFile)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	for w.Add(saveFile) != nil {
+		fmt.Println("waiting for savefile")
+		times := handler.LoadEmptyTimes(routeP)
+		printTimes(times, info, splits, routeP, number, side)
+		time.Sleep(time.Second)
 	}
 
 	c := make(chan os.Signal, 1)

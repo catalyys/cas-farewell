@@ -39,6 +39,7 @@ func ParseSaveFile(path string) map[Level]time.Duration {
 
 	f, err := os.Open(path)
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "missing savefile!\n")
 		log.Fatal(err)
 	}
 	defer f.Close()
@@ -65,11 +66,11 @@ func ParseSaveFile(path string) map[Level]time.Duration {
 	return times
 }
 
-// func loadEmptyTimes(route string) map[Level]time.Duration {
-// 	var m = make(map[Level]time.Duration)
+func LoadEmptyTimes(route string) map[Level]time.Duration {
+	var m = make(map[Level]time.Duration)
 
-// 	return m
-// }
+	return m
+}
 
 func loadEmptyFile() File {
 	// var file = make(map[Level]time.Duration)
