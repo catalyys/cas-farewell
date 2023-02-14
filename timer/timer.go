@@ -38,9 +38,7 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 	// 	log.Fatal(err)
 	// }
 	for w.Add(saveFile) != nil {
-		fmt.Println("waiting for savefile")
-		times := handler.LoadEmptyTimes(routeP)
-		printTimes(times, info, splits, routeP, number, side)
+		printTimes(handler.LoadEmptyTimes(routeP), info, splits, routeP, number, side)
 		time.Sleep(time.Second)
 	}
 
@@ -146,9 +144,9 @@ func printTimes(times map[handler.Level]time.Duration, info bool, splits bool, r
 		oTotal += oTime
 		nTotal += nTime
 	}
-	if oTotal == nTotal {
-		return
-	}
+	// if oTotal == nTotal {
+	// 	return
+	// }
 
 	tm.Clear()
 	tm.MoveCursor(1, 1)

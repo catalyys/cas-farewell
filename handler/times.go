@@ -67,7 +67,13 @@ func ParseSaveFile(path string) map[Level]time.Duration {
 }
 
 func LoadEmptyTimes(route string) map[Level]time.Duration {
+	levels := GetAllRoutes()[route]
+
 	var m = make(map[Level]time.Duration)
+
+	for _, i := range levels {
+		m[i] = 1 * time.Second
+	}
 
 	return m
 }
