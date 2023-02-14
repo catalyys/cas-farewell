@@ -10,6 +10,7 @@ type File struct {
 	DefaultCustomsNames map[Level]string        `json:"default_custom_chapter_names"`
 	Bule                map[Level]time.Duration `json:"bule"`
 	Pb                  map[string]Run          `json:"pb"`
+	CustomRuns          map[string][]Level      `json:"customruns"`
 }
 
 type Run struct {

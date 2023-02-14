@@ -11,12 +11,14 @@ import (
 func SaveTimes(m map[Level]time.Duration, typ string) {
 	var db File
 
+	cr := LoadFile().CustomRuns
+
 	if typ == "bule" {
 		pb := LoadFile().Pb
 
 		buleTimes := MergeBule(m, LoadBule())
 
-		db = File{LoadFile().Settings, LoadFile().DefaultCustomsNames, buleTimes, pb}
+		db = File{LoadFile().Settings, LoadFile().DefaultCustomsNames, buleTimes, pb, cr}
 
 		saveConfig(db)
 
@@ -29,7 +31,7 @@ func SaveTimes(m map[Level]time.Duration, typ string) {
 
 	buleTimes := MergeBule(m, LoadBule())
 
-	db = File{LoadFile().Settings, LoadFile().DefaultCustomsNames, buleTimes, pb}
+	db = File{LoadFile().Settings, LoadFile().DefaultCustomsNames, buleTimes, pb, cr}
 
 	saveConfig(db)
 }

@@ -209,15 +209,7 @@ func printTimes(times map[handler.Level]time.Duration, info bool, splits bool, r
 }
 
 func getRun(route string) []handler.Level {
-	switch route {
-	case "any":
-		return handler.AnyPercent
-	case "anyB":
-		return handler.AnyPercentB
-	case "ForCity":
-		return handler.City
-	}
+	levels := handler.GetAllRoutes()[route]
 
-	//log.Fatal("not a valid route\n")
-	return nil
+	return levels
 }

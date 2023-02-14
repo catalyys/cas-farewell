@@ -91,7 +91,7 @@ var AnyPercentB = []Level{
 }
 
 func GetAllRoutes() map[string][]Level {
-	var allRoutes = make(map[string][]Level)
+	var allRoutes = LoadFile().CustomRuns
 
 	allRoutes["any%"] = AnyPercent
 	allRoutes["any%B"] = AnyPercentB
@@ -107,7 +107,7 @@ func ListChapters(levels []Level) string {
 	for _, value := range levels {
 		s = s + value.String(true, true)
 		if i < len(levels)-1 {
-			s = s + "->"
+			s = s + "-> "
 		}
 		i++
 	}

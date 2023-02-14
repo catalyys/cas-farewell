@@ -24,6 +24,8 @@ func setDefaults() {
 
 	buleTimes := LoadFile().Bule
 
+	cr := LoadFile().CustomRuns
+
 	defaultSettings := map[string]string{
 		"default_run":        "any",
 		"celeste_savefolder": os.Getenv("HOME") + "/.local/share/Celeste/Saves/",
@@ -57,7 +59,7 @@ func setDefaults() {
 		{Chapter9, SideA}: "",
 	}
 
-	db = File{defaultSettings, defaultChapterNames, buleTimes, pb}
+	db = File{defaultSettings, defaultChapterNames, buleTimes, pb, cr}
 
 	saveConfig(db)
 }
@@ -143,7 +145,9 @@ func ImportOldPb(file string, cat string) {
 	run := Run{pb, pbs[cat].Levelnames}
 	pbs[cat] = run
 
-	db := File{LoadFile().Settings, LoadFile().DefaultCustomsNames, LoadBule(), pbs}
+	cr := LoadFile().CustomRuns
+
+	db := File{LoadFile().Settings, LoadFile().DefaultCustomsNames, LoadBule(), pbs, cr}
 
 	saveConfig(db)
 }
@@ -166,7 +170,7 @@ func ImportOldBule(file string) {
 
 	m := MergeBule(bule, LoadBule())
 
-	db := File{LoadFile().Settings, LoadFile().DefaultCustomsNames, m, LoadFile().Pb}
+	db := File{LoadFile().Settings, LoadFile().DefaultCustomsNames, m, LoadFile().Pb, LoadFile().CustomRuns}
 
 	saveConfig(db)
 }
