@@ -74,7 +74,7 @@ func LoadEmptyTimes(route string) map[Level]time.Duration {
 	var m = make(map[Level]time.Duration)
 
 	for _, i := range levels {
-		m[i] = 1 * time.Second
+		m[i] = time.Duration(0)
 	}
 
 	return m
