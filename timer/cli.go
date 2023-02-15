@@ -149,7 +149,7 @@ func StartTimer() {
 					Usage: "create route",
 					Flags: routeFlags,
 					Action: func(c *cli.Context) error {
-
+						handler.CreateRoute(c.String("name"), c.String("route"))
 						return nil
 					},
 				},
