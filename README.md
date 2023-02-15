@@ -6,11 +6,11 @@ Celeste Auto-Splitter for Linux.
 
 - [x] make all pb files one
 	- [x] move file to .config
-	- [ ] import old pb files
-- [ ] load empty times better and display sane numbers
+	- [x] import old pb files
+- [x] load empty times better and display sane numbers
 - [ ] a way to make easy custom routes
-	- [ ] load custom run from json
-	- [ ] switch route mid run (any% -> any%B)
+	- [x] load custom run from json
+- [ ] switch route mid run (any% -> any%B)
 - [ ] make command line easier
 	- [ ] some commands cant be chained together properly
 - [ ] more settings

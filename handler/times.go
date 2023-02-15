@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -69,7 +70,7 @@ func ParseSaveFile(path string) map[Level]time.Duration {
 }
 
 func LoadEmptyTimes(route string) map[Level]time.Duration {
-	levels := GetAllRoutes()[route]
+	levels := GetAllRoutes()[strings.ToLower(route)]
 
 	var m = make(map[Level]time.Duration)
 

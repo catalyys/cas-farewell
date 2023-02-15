@@ -93,9 +93,9 @@ var AnyPercentB = []Level{
 func GetAllRoutes() map[string][]Level {
 	var allRoutes = LoadFile().CustomRuns
 
-	allRoutes["any%"] = AnyPercent
-	allRoutes["any%B"] = AnyPercentB
-	allRoutes["ForCity"] = City
+	allRoutes["any"] = AnyPercent
+	allRoutes["anyb"] = AnyPercentB
+	allRoutes["forcity"] = City
 
 	return allRoutes
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/fatih/color"
 	"github.com/urfave/cli"
@@ -15,7 +16,7 @@ func StartTimer() {
 	// handler.FirstBoot()
 
 	app := cli.NewApp()
-	app.Name = "Celeste Auto Splitter Farewell"
+	app.Name = "Celeste Auto Splitter"
 	app.Usage = "Farewell"
 	app.Version = "1.0.0"
 	app.UseShortOptionHandling = true
@@ -52,12 +53,25 @@ func StartTimer() {
 		},
 	}
 
+	routeFlags := []cli.Flag{
+		cli.StringFlag{
+			Name:  "name, n",
+			Usage: "name of the custom run",
+		},
+		cli.StringFlag{
+			Name:      "route, r",
+			Usage:     "route of the custom run",
+			Required:  true,
+			TakesFile: true,
+		},
+	}
+
 	app.Action = func(c *cli.Context) error {
 		if c.String("savefile") != "0" && c.String("savefile") != "1" && c.String("savefile") != "2" {
 			fmt.Printf("savefile needs to be 0, 1 or 2\n")
 			return nil
 		}
-		RunOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
+		RunOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), strings.ToLower(c.String("route")), c.Bool("number"), c.Bool("sides"))
 		return nil
 	}
 
@@ -72,7 +86,7 @@ func StartTimer() {
 					Usage: "show personal best",
 					Flags: myFlags,
 					Action: func(c *cli.Context) error {
-						ShowBest(c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
+						ShowBest(c.Bool("info"), c.Bool("splits"), strings.ToLower(c.String("route")), c.Bool("number"), c.Bool("sides"))
 						return nil
 					},
 				},
@@ -81,7 +95,7 @@ func StartTimer() {
 					Usage: "show best splits",
 					Flags: myFlags,
 					Action: func(c *cli.Context) error {
-						ShowSplits(c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
+						ShowSplits(c.Bool("info"), c.Bool("splits"), strings.ToLower(c.String("route")), c.Bool("number"), c.Bool("sides"))
 						return nil
 					},
 				},
@@ -106,7 +120,7 @@ func StartTimer() {
 					fmt.Printf("savefile needs to be 0, 1 or 2\n")
 					return nil
 				}
-				RunOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), c.String("route"), c.Bool("number"), c.Bool("sides"))
+				RunOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), strings.ToLower(c.String("route")), c.Bool("number"), c.Bool("sides"))
 				return nil
 			},
 		},
@@ -117,13 +131,37 @@ func StartTimer() {
 			Flags:   importFlags,
 			Action: func(c *cli.Context) error {
 				if c.Bool("pb") {
-					handler.ImportOldPb(c.String("file"), c.String("run"))
+					handler.ImportOldPb(c.String("file"), strings.ToLower(c.String("run")))
 					return nil
 				} else if c.Bool("bule") {
 					handler.ImportOldBule(c.String("file"))
 					return nil
 				}
 				return nil
+			},
+		},
+		{
+			Name:  "route",
+			Usage: "configure routes",
+			Subcommands: []cli.Command{
+				{
+					Name:  "create",
+					Usage: "create route",
+					Flags: routeFlags,
+					Action: func(c *cli.Context) error {
+
+						return nil
+					},
+				},
+				{
+					Name:  "delete",
+					Usage: "delete route",
+					Flags: routeFlags,
+					Action: func(c *cli.Context) error {
+
+						return nil
+					},
+				},
 			},
 		},
 	}
