@@ -211,5 +211,11 @@ func printTimes(times map[handler.Level]time.Duration, info bool, splits bool, r
 func getRun(route string) []handler.Level {
 	levels := handler.GetAllRoutes()[route]
 
+	if levels == nil {
+		fmt.Printf("route %s not found", route)
+		fmt.Println()
+		log.Fatal()
+	}
+
 	return levels
 }
