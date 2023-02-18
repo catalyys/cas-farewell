@@ -23,7 +23,17 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 	tm.Clear()
 	tm.MoveCursor(1, 1)
 	tm.Flush()
-	var saveFile = handler.GetSetting("celeste_savefolder") + file + ".celeste"
+
+	var saveFile string
+	switch file {
+	case "1":
+		saveFile = handler.GetSetting("celeste_savefolder") + "0.celeste"
+	case "2":
+		saveFile = handler.GetSetting("celeste_savefolder") + "1.celeste"
+	default:
+		saveFile = handler.GetSetting("celeste_savefolder") + "2.celeste"
+	}
+
 	buleTimes = handler.LoadBule()
 	pbTimes = handler.LoadRun(routeP)
 	var route = getRun(routeP)

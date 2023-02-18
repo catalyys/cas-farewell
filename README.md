@@ -53,7 +53,7 @@ Here are all the things you can configure without changing the code.
 | -s       | gives you more information about your splits        | ./casf run -is    |
 | -n       | changes chapter names to numbers                    | ./casf -n    |
 | -z       | adds the side letter to chapter                     | ./casf -z   |
-| -save, -savefile| changes the savefile slot [0, 1, 2] _2 is default_      | ./casf -save 0    |
+| -save, -saveslot| changes the saveslot [1, 2, 3] _3 is default_      | ./casf -save 1    |
 | -route, -r| changes the route of the run      | ./casf -route anyB    |
 
 

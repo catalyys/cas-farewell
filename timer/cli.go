@@ -27,9 +27,9 @@ func StartTimer() {
 		cli.BoolFlag{Name: "number, n"},
 		cli.BoolFlag{Name: "sides, z"},
 		cli.StringFlag{
-			Name:  "savefile, save",
-			Value: "2",
-			Usage: "indicates the savefile slot `0`, 1 or 2",
+			Name:  "saveslot, slot, save",
+			Value: "3",
+			Usage: "indicates the saveslot slot `1`, 2 or 3",
 		},
 		cli.StringFlag{
 			Name:  "route, r",
@@ -67,11 +67,11 @@ func StartTimer() {
 	}
 
 	app.Action = func(c *cli.Context) error {
-		if c.String("savefile") != "0" && c.String("savefile") != "1" && c.String("savefile") != "2" {
-			fmt.Printf("savefile needs to be 0, 1 or 2\n")
+		if c.String("saveslot") != "1" && c.String("saveslot") != "2" && c.String("saveslot") != "3" {
+			fmt.Printf("saveslot needs to be 1, 2 or 3\n")
 			return nil
 		}
-		RunOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), strings.ToLower(c.String("route")), c.Bool("number"), c.Bool("sides"))
+		RunOverlay(c.String("saveslot"), c.Bool("info"), c.Bool("splits"), strings.ToLower(c.String("route")), c.Bool("number"), c.Bool("sides"))
 		return nil
 	}
 
@@ -116,11 +116,11 @@ func StartTimer() {
 			Usage:   "start the overlay for the run",
 			Flags:   myFlags,
 			Action: func(c *cli.Context) error {
-				if c.String("savefile") != "0" && c.String("savefile") != "1" && c.String("savefile") != "2" {
-					fmt.Printf("savefile needs to be 0, 1 or 2\n")
+				if c.String("saveslot") != "1" && c.String("saveslot") != "2" && c.String("saveslot") != "3" {
+					fmt.Printf("saveslot needs to be 1, 2 or 3\n")
 					return nil
 				}
-				RunOverlay(c.String("savefile"), c.Bool("info"), c.Bool("splits"), strings.ToLower(c.String("route")), c.Bool("number"), c.Bool("sides"))
+				RunOverlay(c.String("saveslot"), c.Bool("info"), c.Bool("splits"), strings.ToLower(c.String("route")), c.Bool("number"), c.Bool("sides"))
 				return nil
 			},
 		},
