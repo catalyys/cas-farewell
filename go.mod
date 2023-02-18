@@ -9,7 +9,7 @@ require (
 )
 
 require (
-	github.com/buger/goterm v1.0.4 // indirect
+	github.com/buger/goterm v1.0.4
 	github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect

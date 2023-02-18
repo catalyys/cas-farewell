@@ -2,27 +2,36 @@
 
 Celeste Auto-Splitter for Linux.
 
-## Roadmap
 
-- [x] make all pb files one
-	- [x] move file to .config
-	- [x] import old pb files
-- [x] load empty times better and display sane numbers
-- [ ] a way to make easy custom routes
-	- [x] load custom run from json
-- [ ] switch route mid run (any% -> any%B)
-- [ ] make command line easier
-	- [ ] some commands cant be chained together properly
-- [ ] more settings
-	- [x] nicknames for level per run
+
+## Pre-Version 1
+
+All the times changed the location to `~/.config/casf/casf.json`.
+To import your old pb and bule times, backup your pb and bule file before updating and import both of them.
+```
+./casf import --pb --file ./pb.json --run any # here you can name your run if you have more than just any%
+./casf import --bule --file ./bule.json
+```
+
+All run are now saved in `~/.config/casf/casf.json` and support more than one run/route and even custom routes.
+
+
 
 ## Installing
+
+Download the release or compile yourself.
+
+
+
+### Compiling
 
 ```
 git clone https://github.com/catalyys/cas-farewell.git
 cd cas-farewell/
 go build
 ```
+
+
 
 ## running cas - farewell
 
@@ -38,6 +47,8 @@ Here are all the things you can configure without changing the code.
 | run      | start the application (same as executing with nothing)| ./casf run       |
 | help     | shows the help                                      | ./casf help       |
 | show     | shows you personal best or best splits              | ./casf show splits    |
+| route    | configure route for runs                            | ./casf route show    |
+| import   | import old pb or bule files                         | ./casf import  -bule -file ./bule.json |
 | -i       | gives you more information                          | ./casf show best -i |
 | -s       | gives you more information about your splits        | ./casf run -is    |
 | -n       | changes chapter names to numbers                    | ./casf -n    |
@@ -46,15 +57,40 @@ Here are all the things you can configure without changing the code.
 | -route, -r| changes the route of the run      | ./casf -route anyB    |
 
 
-#### show arguments
 
+### show arguments
 
 | Argument | Usage                                 | example |
 | -------- | ------------------------------------- | ------- |
-| best     |  shows personal best                  | ./casf show best       |
-| splits   | shows best splits                     | ./casf show splits       |
+| best     | shows personal best                   | ./casf show best --run any      |
+| bule     | shows best splits                     | ./casf show bule      |
 | routes   | shows all routes                      | ./casf show routes    |
 
+
+
+### route arguments
+
+| Argument | Usage                                 | example |
+| -------- | ------------------------------------- | ------- |
+| create   |  shows personal best                  | ./casf route create -name mycustomrun -route "1:a,2:b"     |
+| show     | shows best splits                     | ./casf route show      |
+| delete   | shows all routes                      | ./casf route delete --name mycustomrun    |
+
+In the route create, the chapter can have following formats: `2:a`, `2:0`, `2a`, `20`
+
+A custom route is created in the config file like this:
+
+```json
+:
+  "customruns": {
+    "mycustomrun": [
+      "1:0",
+      "2:1"
+    ]
+  }
+:
+```
+You can also edit the run from here or delete it.
 
 
 
@@ -70,11 +106,27 @@ xfce4-terminal --geometry=50x13+0+130 --hide-borders --working-directory="$HOME/
 and then mark as always on top (ALT + Spacebar to open menu):
 ![](example/terminal.png)
 
-## Route configuration
 
-To show all pre configured runs you can run `./casf show routes` to display all the routes.
-To make a custum Run you need to modify the `anyPercent` variable in `types.go`.
-An easier way is coming with a later version.
+
+### Settings
+
+You can set some settings in the config file. Currently the default config file looks like this.
+
+```json
+:
+  "settings": {
+    "celeste_savefolder": "/home/olli/.local/share/Celeste/Saves/",
+    "default_saveslot": "3",
+    "default_run": "any",
+    "flag_i": "false",
+    "flag_s": "false",
+    "flag_n": "false",
+    "flag_z": "false"
+  }
+:
+```
+
+
 
 ## Showcase
 
