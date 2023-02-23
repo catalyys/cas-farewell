@@ -24,6 +24,19 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 	tm.MoveCursor(1, 1)
 	tm.Flush()
 
+	if handler.GetSetting("flag_i") == "true" {
+		info = true
+	}
+	if handler.GetSetting("flag_s") == "true" {
+		splits = true
+	}
+	if handler.GetSetting("flag_n") == "true" {
+		number = true
+	}
+	if handler.GetSetting("flag_z") == "true" {
+		side = true
+	}
+
 	var saveFile string
 	switch file {
 	case "1":

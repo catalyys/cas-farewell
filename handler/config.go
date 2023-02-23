@@ -29,6 +29,11 @@ func setDefaults() {
 	defaultSettings := map[string]string{
 		"default_run":        "any",
 		"celeste_savefolder": os.Getenv("HOME") + "/.local/share/Celeste/Saves/",
+		"default_saveslot":   "3",
+		"flag_i":             "false",
+		"flag_s":             "false",
+		"flag_n":             "false",
+		"flag_z":             "false",
 	}
 
 	defaultChapterNames := map[Level]string{
