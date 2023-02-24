@@ -59,10 +59,17 @@ func StartTimer() {
 			Usage: "name of the custom run",
 		},
 		cli.StringFlag{
-			Name:      "route, r",
-			Usage:     "route of the custom run",
-			Required:  true,
-			TakesFile: true,
+			Name:     "route, r",
+			Usage:    "route of the custom run",
+			Required: true,
+		},
+	}
+
+	routeDeleteFlags := []cli.Flag{
+		cli.StringFlag{
+			Name:     "name, n",
+			Usage:    "name of the custom `run` to delete",
+			Required: true,
 		},
 	}
 
@@ -168,11 +175,20 @@ func StartTimer() {
 					},
 				},
 				{
-					Name:  "delete",
-					Usage: "delete route",
-					Flags: routeFlags,
+					Name:  "remove",
+					Usage: "remove route",
+					Flags: routeDeleteFlags,
 					Action: func(c *cli.Context) error {
-
+						handler.DeleteCustomRoute(c.String("name"))
+						return nil
+					},
+				},
+				{
+					Name:  "show",
+					Usage: "show routes",
+					// Flags: routeDeleteFlags,
+					Action: func(c *cli.Context) error {
+						handler.ListRoutes()
 						return nil
 					},
 				},
