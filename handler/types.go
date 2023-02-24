@@ -90,6 +90,34 @@ var AnyPercentB = []Level{
 	{Chapter7, SideA},
 }
 
+var AllChapter = []Level{
+	{Chapter1, SideA},
+	{Chapter1, SideB},
+	{Chapter1, SideC},
+	{Chapter2, SideA},
+	{Chapter2, SideB},
+	{Chapter2, SideC},
+	{Chapter3, SideA},
+	{Chapter3, SideB},
+	{Chapter3, SideC},
+	{Chapter4, SideA},
+	{Chapter4, SideB},
+	{Chapter4, SideC},
+	{Chapter5, SideA},
+	{Chapter5, SideB},
+	{Chapter5, SideC},
+	{Chapter6, SideA},
+	{Chapter6, SideB},
+	{Chapter6, SideC},
+	{Chapter7, SideA},
+	{Chapter7, SideB},
+	{Chapter7, SideC},
+	{Chapter8, SideA},
+	{Chapter8, SideB},
+	{Chapter8, SideC},
+	{Chapter9, SideA},
+}
+
 func GetAllRoutes() map[string][]Level {
 	var allRoutes = LoadFile().CustomRuns
 

@@ -105,11 +105,11 @@ func StartTimer() {
 					},
 				},
 				{
-					Name:  "splits",
-					Usage: "show best splits",
-					Flags: myFlags,
+					Name:  "bule",
+					Usage: "show all best times for each chapter",
+					// Flags: myFlags,
 					Action: func(c *cli.Context) error {
-						ShowSplits(c.Bool("info"), c.Bool("splits"), strings.ToLower(c.String("route")), c.Bool("number"), c.Bool("sides"))
+						ShowBule()
 						return nil
 					},
 				},

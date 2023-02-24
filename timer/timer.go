@@ -69,15 +69,6 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 	signal.Notify(c, os.Interrupt)
 
 	fmt.Printf("running %s\n", routeP)
-	// tm.Flush()
-
-	// tm.Clear()
-	// tm.MoveCursor(1, 1)
-	// tm.Flush()
-	// fmt.Printf("testing %s\n", routeP)
-	// tm.Clear()
-	// tm.MoveCursor(1, 1)
-	// tm.Flush()
 
 	times := handler.ParseSaveFile(saveFile)
 
@@ -143,16 +134,19 @@ func ShowBest(info bool, splits bool, route string, number bool, side bool) {
 	fmt.Printf("-----------------------------------------------\n")
 }
 
-func ShowSplits(info bool, splits bool, route string, number bool, side bool) {
-	pbTimes = handler.LoadRun("any")
+func ShowBule() {
 	buleTimes = handler.LoadBule()
+	fmt.Printf("%20s  %7s\n", "Chapter ", "Time")
 
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
+	for _, level := range handler.AllChapter {
+		d := buleTimes[level]
 
-	fmt.Printf("best Splits in %s\n", route)
-	printTimes(buleTimes, info, splits, route, number, side)
-	fmt.Printf("-----------------------------------------------\n")
+		if d == 0 {
+			fmt.Printf("%20s     -\n", level.String(false, true))
+		} else {
+			fmt.Printf("%20s  %s\n", level.String(false, true), formatter.FormatWithMinutes(d))
+		}
+	}
 }
 
 func printTimes(times map[handler.Level]time.Duration, info bool, splits bool, routeP string, number bool, side bool) {
