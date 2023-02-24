@@ -22,14 +22,14 @@ func StartTimer() {
 	app.UseShortOptionHandling = true
 
 	myFlags := []cli.Flag{
-		cli.BoolFlag{Name: "splits, s"},
-		cli.BoolFlag{Name: "info, i"},
-		cli.BoolFlag{Name: "number, n"},
-		cli.BoolFlag{Name: "sides, z"},
+		cli.BoolFlag{Name: "splits, s", Usage: "shows more information on splits"},
+		cli.BoolFlag{Name: "info, i", Usage: "shows best possible times"},
+		cli.BoolFlag{Name: "number, n", Usage: "displays numbers instead of names"},
+		cli.BoolFlag{Name: "sides, z", Usage: "displays chapter side next to the name/number"},
 		cli.StringFlag{
 			Name: "saveslot, slot, save",
 			// Value: "3",
-			Usage: "indicates the saveslot slot `1`, 2 or 3",
+			Usage: "indicates the saveslot `slot` 1, 2 or 3",
 		},
 		cli.StringFlag{
 			Name:  "route, r",

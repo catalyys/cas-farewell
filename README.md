@@ -81,14 +81,14 @@ In the route create, the chapter can have following formats: `2:a`, `2:0`, `2A`,
 A custom route is created in the config file like this:
 
 ```json
-:
+...
   "customruns": {
     "mycustomrun": [
       "1:0",
       "2:1"
     ]
   }
-:
+...
 ```
 
 You can also edit the run from here or delete it.
@@ -115,7 +115,7 @@ and then mark as always on top (ALT + Spacebar to open menu):
 You can set some settings in the config file. Currently the default config file looks like this.
 
 ```json
-:
+...
   "settings": {
     "celeste_savefolder": "/home/olli/.local/share/Celeste/Saves/",
     "default_saveslot": "3",
@@ -125,7 +125,7 @@ You can set some settings in the config file. Currently the default config file 
     "flag_n": "false",
     "flag_z": "false"
   }
-:
+...
 ```
 
 
