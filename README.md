@@ -72,11 +72,11 @@ Here are all the things you can configure without changing the code.
 
 | Argument | Usage                                 | example |
 | -------- | ------------------------------------- | ------- |
-| create   |  shows personal best                  | ./casf route create -name mycustomrun -route "1:a,2:b"     |
-| show     | shows best splits                     | ./casf route show      |
-| delete   | shows all routes                      | ./casf route delete --name mycustomrun    |
+| create   | creates a custom run                  | ./casf route create -name mycustomrun -route "1:a,2:b"     |
+| show     | shows all run (same as `./casf show routes`) | ./casf route show      |
+| remove   | remove a custom run                   | ./casf route delete -name mycustomrun    |
 
-In the route create, the chapter can have following formats: `2:a`, `2:0`, `2a`, `20`
+In the route create, the chapter can have following formats: `2:a`, `2:0`, `2A`, `20`
 
 A custom route is created in the config file like this:
 

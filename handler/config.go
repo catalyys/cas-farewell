@@ -179,11 +179,3 @@ func ImportOldBule(file string) {
 
 	saveConfig(db)
 }
-
-func DeleteCustomRoute(key string) {
-	curr := LoadFile()
-
-	delete(curr.CustomRuns, key)
-
-	saveConfig(curr)
-}
