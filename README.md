@@ -17,21 +17,18 @@ To import your old pb and bule times, backup your pb and bule file before updati
 All run are now saved in `~/.config/casf/casf.json` and support more than one run/route and even custom routes.
 
 
-
 ## Installing
 
 Download the release or compile yourself.
 
 
-
-### Compiling from source
+### compiling from source
 
 ```bash
 git clone https://github.com/catalyys/cas-farewell.git
 cd cas-farewell/
 go build
 ```
-
 
 
 ## running cas - farewell
