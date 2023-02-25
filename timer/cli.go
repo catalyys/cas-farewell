@@ -107,7 +107,7 @@ func StartTimer() {
 				{
 					Name:  "bule",
 					Usage: "show all best times for each chapter",
-					// Flags: myFlags,
+					Flags: myFlags,
 					Action: func(c *cli.Context) error {
 						ShowBule()
 						return nil

@@ -8,7 +8,8 @@ Celeste Auto-Splitter for Linux.
 
 All the times changed the location to `~/.config/casf/casf.json`.
 To import your old pb and bule times, backup your pb and bule file before updating and import both of them.
-```
+
+```bash
 ./casf import --pb --file ./pb.json --run any # here you can name your run if you have more than just any%
 ./casf import --bule --file ./bule.json
 ```
@@ -23,9 +24,9 @@ Download the release or compile yourself.
 
 
 
-### Compiling
+### Compiling from source
 
-```
+```bash
 git clone https://github.com/catalyys/cas-farewell.git
 cd cas-farewell/
 go build
@@ -72,7 +73,7 @@ Here are all the things you can configure without changing the code.
 
 | Argument | Usage                                 | example |
 | -------- | ------------------------------------- | ------- |
-| create   | creates a custom run                  | ./casf route create -name mycustomrun -route "1:a,2:b"     |
+| create   | creates a custom run                  | ./casf route create -name mycustomrun -route "1:a,2:1"     |
 | show     | shows all run (same as `./casf show routes`) | ./casf route show      |
 | remove   | remove a custom run                   | ./casf route delete -name mycustomrun    |
 
@@ -139,9 +140,3 @@ You can set some settings in the config file. Currently the default config file 
 ### New Run
 
 ![](example/autodelete.gif)
-
-
-#### Credits
-
-This Repository was built on top of the original cas from ~bfiedler.
-The original Repo can be found at https://sr.ht/~bfiedler/cas/
