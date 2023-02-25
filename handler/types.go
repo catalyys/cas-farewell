@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"fmt"
@@ -6,22 +6,27 @@ import (
 	"strings"
 )
 
-type Level struct {
-	Chapter Chapter
-	Side    Side
-}
-
 func (l Level) String(number bool, side bool) string {
+	db := LoadFile()
+
+	if db.Pb["any"].Levelnames[l] != "" {
+		return db.Pb["any"].Levelnames[l] + " "
+	}
+
+	if db.DefaultCustomsNames[l] != "" {
+		return db.DefaultCustomsNames[l] + " "
+	}
+
 	switch l.Chapter {
 	case Prologue:
 		fallthrough
-	case Epilogue:
-		return l.Chapter.String(number)
+	// case Epilogue:
+	// 	return l.Chapter.String(number)
 	default:
 		if number {
-			return l.Chapter.String(number) + l.Side.String(side)
+			return l.Chapter.String(number) + " " + l.Side.String(side) + " "
 		} else {
-			return l.Chapter.String(number) + " " + l.Side.String(side)
+			return l.Chapter.String(number) + l.Side.String(side) + " "
 		}
 	}
 }
@@ -40,7 +45,7 @@ func (l *Level) UnmarshalText(b []byte) error {
 	if err != nil {
 		return err
 	}
-	if c < 0 || c >= 10 {
+	if c < 0 || c >= 11 {
 		return fmt.Errorf("invalid chapter: %v", c)
 	}
 	(*l).Chapter = Chapter(c)
@@ -57,7 +62,7 @@ func (l *Level) UnmarshalText(b []byte) error {
 	return nil
 }
 
-var anyPercent = []Level{
+var AnyPercent = []Level{
 	{Prologue, SideA},
 	{Chapter1, SideA},
 	{Chapter2, SideA},
@@ -72,7 +77,7 @@ var City = []Level{
 	{Chapter1, SideA},
 }
 
-var anyPercentB = []Level{
+var AnyPercentB = []Level{
 	{Prologue, SideA},
 	{Chapter1, SideA},
 	{Chapter2, SideA},
@@ -85,31 +90,66 @@ var anyPercentB = []Level{
 	{Chapter7, SideA},
 }
 
-func getAllRoutes() map[string][]Level {
-	var allRoutes = make(map[string][]Level)
+var AllChapter = []Level{
+	{Chapter1, SideA},
+	{Chapter1, SideB},
+	{Chapter1, SideC},
+	{Chapter2, SideA},
+	{Chapter2, SideB},
+	{Chapter2, SideC},
+	{Chapter3, SideA},
+	{Chapter3, SideB},
+	{Chapter3, SideC},
+	{Chapter4, SideA},
+	{Chapter4, SideB},
+	{Chapter4, SideC},
+	{Chapter5, SideA},
+	{Chapter5, SideB},
+	{Chapter5, SideC},
+	{Chapter6, SideA},
+	{Chapter6, SideB},
+	{Chapter6, SideC},
+	{Chapter7, SideA},
+	{Chapter7, SideB},
+	{Chapter7, SideC},
+	{Chapter8, SideA},
+	{Chapter8, SideB},
+	{Chapter8, SideC},
+	{Chapter9, SideA},
+}
 
-	allRoutes["any%"] = anyPercent
-	allRoutes["any%B"] = anyPercentB
-	allRoutes["ForCity"] = City
+func GetAllRoutes() map[string][]Level {
+	var allRoutes = LoadFile().CustomRuns
+
+	if allRoutes == nil {
+		allRoutes := make(map[string][]Level)
+
+		allRoutes["any"] = AnyPercent
+		allRoutes["anyb"] = AnyPercentB
+		allRoutes["forcity"] = City
+
+		return allRoutes
+	}
+	allRoutes["any"] = AnyPercent
+	allRoutes["anyb"] = AnyPercentB
+	allRoutes["forcity"] = City
 
 	return allRoutes
 }
 
-func listChapters(levels []Level) string {
+func ListChapters(levels []Level) string {
 	var s string
 	var i int = 0
 
 	for _, value := range levels {
 		s = s + value.String(true, true)
 		if i < len(levels)-1 {
-			s = s + "->"
+			s = s + "-> "
 		}
 		i++
 	}
 	return fmt.Sprint(s)
 }
-
-type Chapter int
 
 const (
 	Prologue = iota
@@ -120,7 +160,7 @@ const (
 	Chapter5
 	Chapter6
 	Chapter7
-	Epilogue
+	// Epilogue
 	Chapter8
 	Chapter9
 )
@@ -134,7 +174,7 @@ var shortChapterName = []string{
 	"5",
 	"6",
 	"7",
-	"Epilogue",
+	// "Epilogue",
 	"8",
 	"9",
 }
@@ -148,7 +188,7 @@ var longChapterName = []string{
 	"Mirror Temple",
 	"Reflection",
 	"The Summit",
-	"Epilogue",
+	// "Epilogue",
 	"Core",
 	"Farewell",
 }
@@ -160,8 +200,6 @@ func (c Chapter) String(number bool) string {
 		return longChapterName[c]
 	}
 }
-
-type Side int
 
 const (
 	SideA Side = iota
