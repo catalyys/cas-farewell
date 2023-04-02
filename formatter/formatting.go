@@ -48,7 +48,8 @@ func FormatDiff(t time.Duration, pb time.Duration, isBule bool) string {
 }
 
 func FormatWithMinutes(d time.Duration) string {
-	minutes := d / time.Minute
+	hours := d / time.Hour
+	minutes := (d / time.Minute) - (60 * hours)
 
 	tenths := d / (100 * time.Millisecond)
 	seconds := d / time.Second
@@ -56,5 +57,5 @@ func FormatWithMinutes(d time.Duration) string {
 	tenths %= 10
 	seconds %= 60
 
-	return fmt.Sprintf("%02d:%02d.%01d", minutes, seconds, tenths)
+	return fmt.Sprintf("%02d:%02d:%02d.%01d", hours, minutes, seconds, tenths)
 }
