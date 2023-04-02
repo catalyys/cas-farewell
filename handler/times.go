@@ -13,9 +13,9 @@ func SaveTimes(m map[Level]time.Duration, typ string) {
 	var db File
 
 	cr := LoadFile().CustomRuns
+	pb := LoadFile().Pb
 
 	if typ == "bule" {
-		pb := LoadFile().Pb
 
 		buleTimes := MergeBule(m, LoadBule())
 
@@ -26,9 +26,8 @@ func SaveTimes(m map[Level]time.Duration, typ string) {
 		return
 	}
 
-	run := Run{m, LoadFile().Pb["any"].Levelnames}
-	pb := make(map[string]Run)
-	pb["any"] = run
+	run := Run{m, LoadFile().Pb[typ].Levelnames}
+	pb[typ] = run
 
 	buleTimes := MergeBule(m, LoadBule())
 
