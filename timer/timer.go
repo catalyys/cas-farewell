@@ -107,7 +107,7 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 					pbD += pbTimes[k]
 
 				}
-				if d < pbD {
+				if d < pbD || len(pbTimes) == 0 {
 					//log.Printf("new pb, congratulations!")
 					pbTimes = times
 					handler.SaveTimes(pbTimes, routeP)
@@ -123,7 +123,7 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 }
 
 func ShowBest(info bool, splits bool, route string, number bool, side bool) {
-	pbTimes = handler.LoadRun("any")
+	pbTimes = handler.LoadRun(route)
 	buleTimes = handler.LoadBule()
 
 	c := make(chan os.Signal, 1)
