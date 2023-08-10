@@ -26,6 +26,10 @@ func SaveTimes(m map[Level]time.Duration, typ string) {
 		return
 	}
 
+        if pb == nil {
+                pb = make(map[string]Run)
+        }
+
 	run := Run{m, LoadFile().Pb[typ].Levelnames}
 	pb[typ] = run
 
