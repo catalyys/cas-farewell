@@ -56,8 +56,7 @@ func ParseSaveFile(path string) map[Level]time.Duration {
 	err = d.Decode(&s)
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "corrupted or missing savefile!\n")
-		log.Fatal(err)
+                return nil
 	}
 
 	for _, area := range s.Areas {

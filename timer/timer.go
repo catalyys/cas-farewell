@@ -93,7 +93,14 @@ func RunOverlay(file string, info bool, splits bool, routeP string, number bool,
 			case fsnotify.Chmod:
 				fallthrough
 			case fsnotify.Write:
-				times = handler.ParseSaveFile(saveFile)
+                                var new_times map[handler.Level]time.Duration = nil
+                                for {
+				        new_times = handler.ParseSaveFile(saveFile)
+                                        if new_times != nil {
+                                                break
+                                        }
+                                }
+                                times = new_times
 			}
 
 			printTimes(times, info, splits, routeP, number, side)
