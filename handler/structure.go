@@ -34,10 +34,12 @@ type SaveData struct {
 
 type Area struct {
 	ID            Chapter         `xml:",attr"`
+	Cassette      bool            `xml:",attr"`
 	AreaModeStats []AreaModeStats `xml:"Modes>AreaModeStats"`
 }
 
 type AreaModeStats struct {
 	TimePlayed uint64 `xml:",attr"` // in 10 millionths of a second
 	BestTime   uint64 `xml:",attr"` // in 10 millionths of a second
+	Completed  bool   `xml:",attr"` 
 }

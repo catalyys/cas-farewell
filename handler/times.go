@@ -64,7 +64,9 @@ func ParseSaveFile(path string) map[Level]time.Duration {
 			if ams.TimePlayed == 0 {
 				continue
 			}
-			times[Level{Chapter: area.ID, Side: Side(side)}] = time.Duration(ams.TimePlayed) * 100
+			if ams.Completed || area.Cassette && Side(side) == SideA {
+				times[Level{Chapter: area.ID, Side: Side(side)}] = time.Duration(ams.TimePlayed) * 100
+			}
 		}
 	}
 
